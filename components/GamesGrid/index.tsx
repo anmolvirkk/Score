@@ -2,7 +2,6 @@
 
 import { MatchData } from '@/types';
 import gamesJSON from '../../test.json';
-import Isotope from 'isotope-layout';
 import { useEffect, useRef } from 'react';
 import { PieChart } from 'react-minimal-pie-chart';
 
@@ -151,6 +150,7 @@ export default function GamesGrid() {
   const isotope = useRef<any>();
   useEffect(() => {
     if(window !== undefined){
+      const Isotope = require('isotope-layout');
       isotope.current = new Isotope('.games', {
         itemSelector: '.game',
         layoutMode: 'fitRows'
