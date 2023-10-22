@@ -115,8 +115,8 @@ const Game = (matchData : MatchData) => {
               {title: 'Losses', value: form.losses, color: "#56667a"}
             ];
             return <PieChart 
-              data={data}
               key={key}
+              data={data}
               className="w-[10rem]"
               radius={10}
               viewBoxSize={[30, 30]}
