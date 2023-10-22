@@ -150,11 +150,13 @@ export default function GamesGrid() {
   const gamesData : any = gamesJSON;
   const isotope = useRef<any>();
   useEffect(() => {
-    isotope.current = new Isotope('.games', {
-      itemSelector: '.game',
-      layoutMode: 'fitRows'
-    });
-    return () => isotope.current?.destroy();
+    if(window !== undefined){
+      isotope.current = new Isotope('.games', {
+        itemSelector: '.game',
+        layoutMode: 'fitRows'
+      });
+      return () => isotope.current?.destroy();
+    }
   }, []);
   if(gamesData && gamesData?.length > 0){
     return (
