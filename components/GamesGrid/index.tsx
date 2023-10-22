@@ -114,25 +114,22 @@ const Game = (matchData : MatchData) => {
               {title: 'Draws', value: form.draws, color: "#99F6E4"},
               {title: 'Losses', value: form.losses, color: "#56667a"}
             ];
-            return (
-              <div key={key}>
-                <PieChart 
-                  data={data}
-                  className="w-[10rem]"
-                  radius={10}
-                  viewBoxSize={[30, 30]}
-                  center={[15, 15]}
-                  segmentsShift={1}
-                  label={({ dataEntry } : {dataEntry : any}) => dataEntry?.value > 0 && dataEntry?.value + ' ' + dataEntry?.title.slice(0, 1)}
-                  labelStyle={(segmentIndex:number) => {
-                    return {
-                      fontSize: '0.1rem',
-                      fill: data[segmentIndex].title === "Draws" ? "rgb(20,22,27)" : "white"
-                    }
-                  }}
-                />
-              </div>
-            )
+            return <PieChart 
+              key={key}
+              data={data}
+              className="w-[10rem]"
+              radius={10}
+              viewBoxSize={[30, 30]}
+              center={[15, 15]}
+              segmentsShift={1}
+              label={({ dataEntry } : {dataEntry : any}) => dataEntry?.value > 0 && dataEntry?.value + ' ' + dataEntry?.title.slice(0, 1)}
+              labelStyle={(segmentIndex:number) => {
+                return {
+                  fontSize: '0.1rem',
+                  fill: data[segmentIndex].title === "Draws" ? "rgb(20,22,27)" : "white"
+                }
+              }}
+            />
           })}
         </div>
       </div>
