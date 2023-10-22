@@ -116,6 +116,7 @@ const Game = (matchData : MatchData) => {
             ];
             return <PieChart 
               data={data}
+              key={key}
               className="w-[10rem]"
               radius={10}
               viewBoxSize={[30, 30]}
