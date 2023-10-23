@@ -4,6 +4,8 @@ import { MatchData } from '@/types';
 import gamesJSON from '../../test.json';
 import { useEffect, useRef } from 'react';
 import { PieChart } from 'react-minimal-pie-chart';
+import BottomNavigation from '../BottomSheet';
+import {RecoilRoot} from 'recoil';
 
 const Game = (matchData : MatchData) => {
 
@@ -197,9 +199,12 @@ export default function GamesGrid() {
   }, [window])
   if(gamesData && gamesData?.length > 0){
     return (
-      <div className='games p-[1.5rem] sm:p-[3rem] w-full mx-auto'>
-          {gamesData.map((game : MatchData, key : number) =><Game key={key} {...game} />)}
-      </div>
+      <RecoilRoot>
+        <BottomNavigation />
+        <div className='games p-[1.5rem] sm:p-[3rem] w-full mx-auto'>
+            {gamesData.map((game : MatchData, key : number) =><Game key={key} {...game} />)}
+        </div>
+      </RecoilRoot>
     )
   }else{
     return null

@@ -18,3 +18,35 @@ html, body {
 ::-webkit-scrollbar-thumb {
   background-color: rgb(60,60,60);
 }
+
+
+.destroy-button {
+  display: none
+}
+
+.draggable .move {
+  background-color: black;
+  height: 0.3rem;
+  width: 3rem;
+  border-radius: 100rem 100rem;
+}
+
+.cupertino-pane-wrapper .draggable {
+  z-index: 1;
+  padding: 1.5rem 0;
+  background-color: white;
+  width: 100%;
+  height: fit-content;
+}
+
+.cupertino-pane-wrapper .pane {
+  padding: 0;
+  max-width: 425px;
+  overflow: hidden;
+  border-radius: 3rem 3rem 0 0;
+}
+
+.cupertino-pane {
+  max-width: 425px;
+  padding: 2.5rem 0 1rem;
+}

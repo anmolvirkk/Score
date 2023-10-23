@@ -11,11 +11,13 @@
   "dependencies": {
     "axios": "^1.5.1",
     "cheerio": "^1.0.0-rc.12",
+    "cupertino-pane": "^1.4.2",
     "isotope-layout": "^3.0.6",
     "next": "13.5.6",
     "react": "^18",
     "react-dom": "^18",
-    "react-minimal-pie-chart": "^8.4.0"
+    "react-minimal-pie-chart": "^8.4.0",
+    "recoil": "^0.7.7"
   },
   "devDependencies": {
     "@types/node": "^20",
