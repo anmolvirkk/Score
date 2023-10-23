@@ -102,6 +102,9 @@ const Game = (matchData : MatchData) => {
   };
 
   const TeamForm = () => {
+    if(window === undefined){
+      return null;
+    }
     return (
       <div className="mt-[2rem]">
         <Heading text="Team Form" />
