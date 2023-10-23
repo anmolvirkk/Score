@@ -179,7 +179,7 @@ export default function GamesGrid() {
         }
         const containerPadding = parseInt(getComputedStyle(gamesContainer).getPropertyValue('padding'));
         const finalWidth = gameWidth + containerPadding;
-        if(finalWidth > 480){
+        if(window.innerWidth > 480){
           gamesContainer.style.width = (finalWidth) + 'px';
         }else{
           gamesContainer.style.width = '100%';
@@ -187,7 +187,14 @@ export default function GamesGrid() {
       }
     }
     resizeContainer();
-  }, [])
+    window.addEventListener('resize', () => {
+      const gamesContainer : HTMLDivElement | null = document.querySelector('.games');
+      if(gamesContainer){
+        gamesContainer.style.width = '100%';
+        setTimeout(resizeContainer, 3000);
+      }
+    });
+  }, [window])
   if(gamesData && gamesData?.length > 0){
     return (
       <div className='games p-[1.5rem] sm:p-[3rem] w-full mx-auto'>
