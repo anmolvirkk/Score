@@ -50,7 +50,7 @@ const Game = (matchData : MatchData) => {
 
   const GameOdds = () => {
     return (
-      <div className='flex gap-[3rem] my-[2rem]'>
+      <div className='flex gap-[3rem] my-[2rem] overflow-x-auto'>
         {Object.keys(matchData.odds).map((item, key) => (
           <div className='flex flex-col items-center justify-between gap-[0.5rem] w-full' key={key}>
             <div className='text-center'>{item}</div>
@@ -136,7 +136,7 @@ const Game = (matchData : MatchData) => {
   }
   
   return (
-    <div className='game m-[0] my-[1.5rem] sm:m-[2rem] p-[2rem] rounded-[1rem] bg-primary-600 border-x-2 shadow-md text-white border-gray-600 w-[calc(100%-3rem)] sm:w-[calc(100%-10rem)] md:w-[80%] lg:w-[40%] xl:w-[27%] 2xl:w-[20%]'>
+    <div className='game m-[0] my-[1.5rem] sm:m-[2rem] p-[2rem] rounded-[1rem] bg-primary-600 border-x-2 shadow-md text-white border-gray-600 max-w-[25rem] sm:min-w-[25rem] w-[calc(100%-3rem)] sm:w-[calc(25%-8rem)]'>
       <GameTime />
       <GameOdds />
       <LastScore />
@@ -158,11 +158,38 @@ export default function GamesGrid() {
       return () => isotope.current?.destroy();
     }
   }, []);
+  useEffect(() => {
+    const resizeContainer = () => {
+      const gamesContainer : HTMLDivElement | null = document.querySelector('.games');
+      const games = document.querySelectorAll('.game');
+      if(gamesContainer && games && games.length > 0){
+        let gameWidth = 0;
+        let previousPositionTop = getComputedStyle(games[0]).getPropertyValue('top'); 
+        for(let i = 0; i < 6; i++){
+          const game = games[i];
+          const positionTop = getComputedStyle(game).getPropertyValue('top');
+          if(previousPositionTop === positionTop){
+            const positionLeft = parseInt(getComputedStyle(game).getPropertyValue('left'));
+            const margin = parseInt(getComputedStyle(game).getPropertyValue('margin'))*2;
+            gameWidth = positionLeft + game.clientWidth + margin;
+          }
+        }
+        const containerPadding = parseInt(getComputedStyle(gamesContainer).getPropertyValue('padding'));
+        const finalWidth = gameWidth + containerPadding;
+        if(finalWidth > 480){
+          gamesContainer.style.width = (finalWidth) + 'px';
+        }else{
+          gamesContainer.style.width = '100%';
+        }
+      }
+    }
+    resizeContainer();
+  }, [])
   if(gamesData && gamesData?.length > 0){
     return (
-      <div className='games p-[1.5rem] sm:p-[3rem]'>
+      <div className='games p-[1.5rem] sm:p-[3rem] w-full mx-auto'>
+          <div className='fixed w-[100%] h-[100%] top-[0] left-[0] bg-gradient-to-b from-primary-400 to-primary-500 z-[-1]'></div>
           {gamesData.map((game : MatchData, key : number) =><Game key={key} {...game} />)}
-          <div className='fixed w-screen h-screen top-[0] left-[0] bg-gradient-to-b from-primary-400 to-primary-500 z-[-1]'></div>
       </div>
     )
   }else{
