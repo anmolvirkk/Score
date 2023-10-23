@@ -198,7 +198,6 @@ export default function GamesGrid() {
   if(gamesData && gamesData?.length > 0){
     return (
       <div className='games p-[1.5rem] sm:p-[3rem] w-full mx-auto'>
-          <div className='fixed w-[100%] h-[100%] top-[0] left-[0] bg-gradient-to-b from-primary-400 to-primary-500 z-[-1]'></div>
           {gamesData.map((game : MatchData, key : number) =><Game key={key} {...game} />)}
       </div>
     )
