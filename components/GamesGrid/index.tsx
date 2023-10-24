@@ -6,6 +6,8 @@ import { useEffect, useRef } from 'react';
 import { PieChart } from 'react-minimal-pie-chart';
 import BottomNavigation from '../BottomSheet';
 import {RecoilRoot} from 'recoil';
+import { useRecoilState } from 'recoil';
+import { searchAtom } from '@/atoms';
 
 const Game = (matchData : MatchData) => {
 
@@ -55,7 +57,7 @@ const Game = (matchData : MatchData) => {
       <div className='flex gap-[3rem] my-[2rem] overflow-x-auto'>
         {Object.keys(matchData.odds).map((item, key) => (
           <div className='flex flex-col items-center justify-between gap-[0.5rem] w-full' key={key}>
-            <div className='text-center'>{item}</div>
+            <div className='text-center game-team'>{item}</div>
             <div className="flex flex-col items-center"><span className="opacity-[0.75]">{matchData.odds[item]}</span> <span className={!matchData.tip.includes(item) ? 'opacity-0' : 'opacity-1'}>✅</span></div>
           </div>
         ))}
@@ -150,8 +152,13 @@ const Game = (matchData : MatchData) => {
   )
 }
 
-export default function GamesGrid() {
+const Games = () => {
+
   const gamesData : any = gamesJSON;
+  if(!gamesData || gamesData?.length === 0){
+    return null;
+  }
+
   const isotope = useRef<any>();
   useEffect(() => {
     if(window !== undefined){
@@ -197,16 +204,37 @@ export default function GamesGrid() {
       }
     });
   }, [window])
-  if(gamesData && gamesData?.length > 0){
-    return (
-      <RecoilRoot>
-        <BottomNavigation />
-        <div className='games p-[1.5rem] sm:p-[3rem] w-full mx-auto'>
-            {gamesData.map((game : MatchData, key : number) =><Game key={key} {...game} />)}
-        </div>
-      </RecoilRoot>
-    )
-  }else{
-    return null
-  }
+
+  const [search] = useRecoilState(searchAtom);
+  useEffect(() => {
+    isotope.current.arrange({filter: (item:any) => {
+      const teamNames = item.querySelectorAll('.game-team');
+      if(teamNames){
+        let matchFound = false;
+        for(let i = 0; i < teamNames.length; i++){
+          const teamName = teamNames[i];
+          if(teamName.textContent?.toLowerCase().includes(search.toLowerCase())){
+            matchFound = true;
+            break;
+          }
+        }
+        return matchFound;
+      }
+    }})
+  }, [search])
+
+  return (
+    <div className='games p-[1.5rem] sm:p-[3rem] w-full mx-auto'>
+        {gamesData.map((game : MatchData, key : number) =><Game key={key} {...game} />)}
+    </div>
+  )
+}
+
+export default function GamesGrid() {
+  return (
+    <RecoilRoot>
+      <BottomNavigation />
+      <Games />
+    </RecoilRoot>
+  )
 }

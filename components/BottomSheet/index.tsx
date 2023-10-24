@@ -18,7 +18,7 @@ const BottomNavigation = () => {
           middle: { enabled: false },
           bottom: {
             enabled: true,
-            height: (1.5*16)*2.5
+            height: (1.5*16)*2.25
           },
           top: { enabled: true, height: Math.min(window.visualViewport.height, paneHeight) }
         }
