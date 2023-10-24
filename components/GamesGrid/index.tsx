@@ -173,36 +173,38 @@ const Games = () => {
   useEffect(() => {
     const resizeContainer = () => {
       const gamesContainer : HTMLDivElement | null = document.querySelector('.games');
-      const games = document.querySelectorAll('.game');
-      if(gamesContainer && games && games.length > 0){
-        let gameWidth = 0;
-        let previousPositionTop = getComputedStyle(games[0]).getPropertyValue('top'); 
-        for(let i = 0; i < 6; i++){
-          const game = games[i];
-          const positionTop = getComputedStyle(game).getPropertyValue('top');
-          if(previousPositionTop === positionTop){
-            const positionLeft = parseInt(getComputedStyle(game).getPropertyValue('left'));
-            const margin = parseInt(getComputedStyle(game).getPropertyValue('margin'))*2;
-            gameWidth = positionLeft + game.clientWidth + margin;
-          }
-        }
-        const containerPadding = parseInt(getComputedStyle(gamesContainer).getPropertyValue('padding'));
-        const finalWidth = gameWidth + containerPadding;
-        if(window.innerWidth > 480){
-          gamesContainer.style.width = (finalWidth) + 'px';
-        }else{
-          gamesContainer.style.width = '100%';
-        }
-      }
-    }
-    resizeContainer();
-    window.addEventListener('resize', () => {
-      const gamesContainer : HTMLDivElement | null = document.querySelector('.games');
       if(gamesContainer){
         gamesContainer.style.width = '100%';
-        setTimeout(resizeContainer, 3000);
       }
+      const resize = () => {
+        const games = document.querySelectorAll('.game');
+        if(gamesContainer && games && games.length > 0){
+          let gameWidth = 0;
+          let previousPositionTop = getComputedStyle(games[0]).getPropertyValue('top'); 
+          for(let i = 0; i < 6; i++){
+            const game = games[i];
+            const positionTop = getComputedStyle(game).getPropertyValue('top');
+            if(previousPositionTop === positionTop){
+              const positionLeft = parseInt(getComputedStyle(game).getPropertyValue('left'));
+              const margin = parseInt(getComputedStyle(game).getPropertyValue('margin'))*2;
+              gameWidth = positionLeft + game.clientWidth + margin;
+            }
+          }
+          const containerPadding = parseInt(getComputedStyle(gamesContainer).getPropertyValue('padding'));
+          const finalWidth = gameWidth + containerPadding;
+          if(window.innerWidth > 480){
+            gamesContainer.style.width = (finalWidth) + 'px';
+          }else{
+            gamesContainer.style.width = '100%';
+          }
+        }
+      }
+      setTimeout(resize, 3000);
+    }
+    window.addEventListener('resize', () => {
+      resizeContainer();
     });
+    resizeContainer();    
   }, [window])
 
   const [search] = useRecoilState(searchAtom);
