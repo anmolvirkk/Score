@@ -437,6 +437,7 @@ export async function GET() {
 
   for(let i = 0; i < allSoccerecoGames.length; i++){
       const gameData = await getMoreSoccerecoData(allSoccerecoGames[i]);
+      console.log((i/allSoccerecoGames.length * 100) + '%')
       allGames.push(gameData);
   }
  

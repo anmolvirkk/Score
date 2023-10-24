@@ -12,6 +12,9 @@ const config: Config = {
         primary: {
           600: 'rgb(10,10,15)',
           700: 'rgb(20,20,30)'
+        },
+        green: {
+          400: '#00D26A'
         }
       }
     },

@@ -1,15 +1,19 @@
 'use client'
 
 import { MatchData } from '@/types';
-import gamesJSON from '../../test.json';
-import { useEffect, useRef } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { PieChart } from 'react-minimal-pie-chart';
 import BottomNavigation from '../BottomSheet';
 import {RecoilRoot} from 'recoil';
 import { useRecoilState } from 'recoil';
 import { searchAtom } from '@/atoms';
+import Loading from '../Loading';
 
 const Game = (matchData : MatchData) => {
+
+  if(!matchData || !matchData?.date || !matchData?.time){
+    return null;
+  }
 
   const Heading = ({text}:{text: string}) => {
     return <div className="bg-primary-700 text-center p-[0.5rem] rounded-[0.5rem] mb-[0.5rem]">{text}</div>
@@ -80,7 +84,7 @@ const Game = (matchData : MatchData) => {
               <div
                 key={key}
                 className={`text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full ${
-                  isTeamAGreater ? (key === 0 ? 'text-white bg-[#00D26A]' : 'text-teal-600 bg-teal-200') : (key === 0 ? 'text-teal-600 bg-teal-200' : 'text-white bg-[#00D26A]')
+                  isTeamAGreater ? (key === 0 ? 'text-white bg-green-400' : 'text-teal-600 bg-teal-200') : (key === 0 ? 'text-teal-600 bg-teal-200' : 'text-white bg-green-400')
                 }`}
               >
                 {item.goals}
@@ -92,7 +96,7 @@ const Game = (matchData : MatchData) => {
               <div
                 key={key}
                 className={`flex flex-col text-center whitespace-nowrap text-white justify-center ${
-                  isTeamAGreater ? (key === 0 ? 'bg-[#00D26A]' : 'bg-teal-200') : (key === 0 ? 'bg-teal-200' : 'bg-[#00D26A]')
+                  isTeamAGreater ? (key === 0 ? 'bg-green-400' : 'bg-teal-200') : (key === 0 ? 'bg-teal-200' : 'bg-green-400')
                 }`}
                 style={{
                   width: `${(item.goals / totalGoals) * 100}%`,
@@ -152,16 +156,26 @@ const Game = (matchData : MatchData) => {
   )
 }
 
-const Games = () => {
+const Games = memo(() => {
 
-  const gamesData : any = gamesJSON;
-  if(!gamesData || gamesData?.length === 0){
-    return null;
+  const [gamesData, setGamesData] = useState<MatchData[] | null>(null);
+
+  const getGamesData = async () => {
+    const response = await fetch('/api/games');
+    if(response){
+      const gamesData : any = await response.json();
+      if(gamesData){
+        setGamesData(gamesData);
+      }
+    }
   }
 
+  getGamesData();
+
   const isotope = useRef<any>();
+
   useEffect(() => {
-    if(window !== undefined){
+    if(window !== undefined && gamesData && gamesData.length > 0){
       const Isotope = require('isotope-layout');
       isotope.current = new Isotope('.games', {
         itemSelector: '.game',
@@ -169,68 +183,79 @@ const Games = () => {
       });
       return () => isotope.current?.destroy();
     }
-  }, []);
+  }, [gamesData]);
+
   useEffect(() => {
-    const resizeContainer = () => {
-      const gamesContainer : HTMLDivElement | null = document.querySelector('.games');
-      if(gamesContainer){
-        gamesContainer.style.width = '100%';
-      }
-      const resize = () => {
-        const games = document.querySelectorAll('.game');
-        if(gamesContainer && games && games.length > 0){
-          let gameWidth = 0;
-          let previousPositionTop = getComputedStyle(games[0]).getPropertyValue('top'); 
-          for(let i = 0; i < 6; i++){
-            const game = games[i];
-            const positionTop = getComputedStyle(game).getPropertyValue('top');
-            if(previousPositionTop === positionTop){
-              const positionLeft = parseInt(getComputedStyle(game).getPropertyValue('left'));
-              const margin = parseInt(getComputedStyle(game).getPropertyValue('margin'))*2;
-              gameWidth = positionLeft + game.clientWidth + margin;
+    if(window !== undefined && gamesData && gamesData.length > 0){
+      const resizeContainer = () => {
+        const gamesContainer : HTMLDivElement | null = document.querySelector('.games');
+        if(gamesContainer){
+          gamesContainer.style.width = '100%';
+        }
+        const resize = () => {
+          const games = document.querySelectorAll('.game');
+          if(gamesContainer && games && games.length > 0){
+            let gameWidth = 0;
+            let previousPositionTop = getComputedStyle(games[0]).getPropertyValue('top'); 
+            for(let i = 0; i < 6; i++){
+              const game = games[i];
+              const positionTop = getComputedStyle(game).getPropertyValue('top');
+              if(previousPositionTop === positionTop){
+                const positionLeft = parseInt(getComputedStyle(game).getPropertyValue('left'));
+                const margin = parseInt(getComputedStyle(game).getPropertyValue('margin'))*2;
+                gameWidth = positionLeft + game.clientWidth + margin;
+              }
+            }
+            const containerPadding = parseInt(getComputedStyle(gamesContainer).getPropertyValue('padding'));
+            const finalWidth = gameWidth + containerPadding;
+            if(window.innerWidth > 480){
+              gamesContainer.style.width = (finalWidth) + 'px';
+            }else{
+              gamesContainer.style.width = '100%';
             }
           }
-          const containerPadding = parseInt(getComputedStyle(gamesContainer).getPropertyValue('padding'));
-          const finalWidth = gameWidth + containerPadding;
-          if(window.innerWidth > 480){
-            gamesContainer.style.width = (finalWidth) + 'px';
-          }else{
-            gamesContainer.style.width = '100%';
-          }
         }
+        setTimeout(resize, 3000);
       }
-      setTimeout(resize, 3000);
-    }
-    window.addEventListener('resize', () => {
-      resizeContainer();
-    });
-    resizeContainer();    
-  }, [window])
+      window.addEventListener('resize', () => {
+        resizeContainer();
+      });
+      resizeContainer();   
+    } 
+  }, [gamesData])
 
   const [search] = useRecoilState(searchAtom);
+
   useEffect(() => {
-    isotope.current.arrange({filter: (item:any) => {
-      const teamNames = item.querySelectorAll('.game-team');
-      if(teamNames){
-        let matchFound = false;
-        for(let i = 0; i < teamNames.length; i++){
-          const teamName = teamNames[i];
-          if(teamName.textContent?.toLowerCase().includes(search.toLowerCase())){
-            matchFound = true;
-            break;
+    if(isotope.current  && gamesData && gamesData.length > 0){
+      isotope.current.arrange({filter: (item:any) => {
+        const teamNames = item.querySelectorAll('.game-team');
+        if(teamNames){
+          let matchFound = false;
+          for(let i = 0; i < teamNames.length; i++){
+            const teamName = teamNames[i];
+            if(teamName.textContent?.toLowerCase().includes(search.toLowerCase())){
+              matchFound = true;
+              break;
+            }
           }
+          return matchFound;
         }
-        return matchFound;
-      }
-    }})
+      }})
+    }
   }, [search])
 
+    
+  if(!gamesData || gamesData?.length === 0){
+    return <Loading />;
+  }
+  
   return (
     <div className='games p-[1.5rem] sm:p-[3rem] w-full mx-auto'>
         {gamesData.map((game : MatchData, key : number) =><Game key={key} {...game} />)}
     </div>
   )
-}
+})
 
 export default function GamesGrid() {
   return (
