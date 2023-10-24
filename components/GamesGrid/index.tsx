@@ -175,7 +175,7 @@ const Games = memo(() => {
   const isotope = useRef<any>();
 
   useEffect(() => {
-    if(window !== undefined && gamesData && gamesData.length > 0){
+    if(window !== undefined && gamesData && gamesData.length > 0 && isotope.current){
       const Isotope = require('isotope-layout');
       isotope.current = new Isotope('.games', {
         itemSelector: '.game',
@@ -183,7 +183,7 @@ const Games = memo(() => {
       });
       return () => isotope.current?.destroy();
     }
-  }, [gamesData]);
+  }, [gamesData, window, isotope.current]);
 
   useEffect(() => {
     if(window !== undefined && gamesData && gamesData.length > 0){
@@ -222,7 +222,7 @@ const Games = memo(() => {
       });
       resizeContainer();   
     } 
-  }, [gamesData])
+  }, [gamesData, window, isotope.current])
 
   const [search] = useRecoilState(searchAtom);
 
@@ -243,7 +243,7 @@ const Games = memo(() => {
         }
       }})
     }
-  }, [search])
+  }, [search, isotope.current, gamesData])
 
     
   if(!gamesData || gamesData?.length === 0){
