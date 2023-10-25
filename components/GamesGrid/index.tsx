@@ -160,17 +160,17 @@ const Games = memo(() => {
 
   const [gamesData, setGamesData] = useState<MatchData[] | null>(null);
 
-  const getGamesData = async () => {
-    const response = await fetch('/api/games');
-    if(response){
-      const gamesData : any = await response.json();
-      if(gamesData){
-        setGamesData(gamesData);
-      }
-    }
-  }
+  // const getGamesData = async () => {
+  //   const response = await fetch('/api/games');
+  //   if(response){
+  //     const gamesData : any = await response.json();
+  //     if(gamesData){
+  //       setGamesData(gamesData);
+  //     }
+  //   }
+  // }
 
-  getGamesData();
+  // getGamesData();
 
   const isotope = useRef<any>();
 
@@ -183,7 +183,7 @@ const Games = memo(() => {
       });
       return () => isotope.current?.destroy();
     }
-  }, [gamesData, window, isotope.current]);
+  }, [gamesData, window]);
 
   useEffect(() => {
     if(window !== undefined && gamesData && gamesData.length > 0){
@@ -222,7 +222,7 @@ const Games = memo(() => {
       });
       resizeContainer();   
     } 
-  }, [gamesData, window, isotope.current])
+  }, [gamesData, window])
 
   const [search] = useRecoilState(searchAtom);
 
@@ -243,7 +243,7 @@ const Games = memo(() => {
         }
       }})
     }
-  }, [search, isotope.current, gamesData])
+  }, [search, gamesData])
 
     
   if(!gamesData || gamesData?.length === 0){
