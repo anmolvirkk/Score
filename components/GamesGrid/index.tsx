@@ -1,7 +1,7 @@
 'use client'
 
 import { MatchData } from '@/types';
-import { memo, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PieChart } from 'react-minimal-pie-chart';
 import BottomNavigation from '../BottomSheet';
 import {RecoilRoot} from 'recoil';
@@ -156,7 +156,7 @@ const Game = (matchData : MatchData) => {
   )
 }
 
-const Games = memo(() => {
+const Games = () => {
 
   const [gamesData, setGamesData] = useState<MatchData[] | null>(null);
 
@@ -183,7 +183,7 @@ const Games = memo(() => {
       });
       return () => isotope.current?.destroy();
     }
-  }, [gamesData, window]);
+  }, [gamesData]);
 
   useEffect(() => {
     if(window !== undefined && gamesData && gamesData.length > 0){
@@ -222,7 +222,7 @@ const Games = memo(() => {
       });
       resizeContainer();   
     } 
-  }, [gamesData, window])
+  }, [gamesData])
 
   const [search] = useRecoilState(searchAtom);
 
@@ -255,7 +255,7 @@ const Games = memo(() => {
         {gamesData.map((game : MatchData, key : number) =><Game key={key} {...game} />)}
     </div>
   )
-})
+}
 
 export default function GamesGrid() {
   return (
