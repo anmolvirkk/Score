@@ -50,3 +50,17 @@ html, body {
   max-width: 425px;
   padding: 2.5rem 0 1rem;
 }
+
+.single-thumb {
+  height: 4px !important;
+  background-color: black !important;
+}
+.single-thumb .range-slider__thumb[data-lower] {
+  width: 0;
+}
+.single-thumb .range-slider__range {
+  background: #00D26A !important;
+}
+.single-thumb .range-slider__thumb {
+  background-color: #00D26A !important;
+}
