@@ -153,7 +153,7 @@ const Game = (matchData : MatchData) => {
         const gamesData = matchData.additional_data.compare_teams_table_data.games_won;
         return Object.keys(gamesData).map((team, key) => {
           return (
-            <div className="flex gap-[1rem]">
+            <div className="flex gap-[1rem]" key={key}>
               <div>Games Won</div>
               <div key={key}>{team} - {gamesData[team]}</div>
             </div>
@@ -164,7 +164,7 @@ const Game = (matchData : MatchData) => {
         const gamesData = matchData.additional_data.compare_teams_table_data.games_lost_or_draw;
         return Object.keys(gamesData).map((team, key) => {
           return (
-            <div className="flex gap-[1rem]">
+            <div className="flex gap-[1rem]" key={key}>
               <div>Games Lost or Draw</div>
               <div key={key}>{team} - {gamesData[team]}</div>
             </div>
@@ -175,7 +175,7 @@ const Game = (matchData : MatchData) => {
         const gamesData = matchData.additional_data.compare_teams_table_data.games_lost;
         return Object.keys(gamesData).map((team, key) => {
           return (
-            <div className="flex gap-[1rem]">
+            <div className="flex gap-[1rem]" key={key}>
               <div>Games Lost</div>
               <div key={key}>{team} - {gamesData[team]}</div>
             </div>
@@ -186,7 +186,7 @@ const Game = (matchData : MatchData) => {
         const gamesData = matchData.additional_data.compare_teams_table_data.games_draw;
         return Object.keys(gamesData).map((team, key) => {
           return (
-            <div className="flex gap-[1rem]">
+            <div className="flex gap-[1rem]" key={key}>
               <div>Games Draw</div>
               <div key={key}>{team} - {gamesData[team]}</div>
             </div>
@@ -215,7 +215,7 @@ const Game = (matchData : MatchData) => {
           return (
             <div key={key} className="flex gap-[1rem]">
               <div>Last five games agaist each other</div>
-              <div key={key}>
+              <div>
                 <div>{team}</div>
                 <div>Wins - {gamesData[team].wins}</div>
                 <div>Wins - {gamesData[team].draws}</div>
@@ -254,7 +254,7 @@ const Game = (matchData : MatchData) => {
         const homeTeam = Object.keys(head_to_head_table_data[item])[0];
         const awayTeam = Object.keys(head_to_head_table_data[item])[1];
         return (
-          <div>
+          <div key={key}>
             <div>Date - {item}</div>
             <div>{homeTeam} - {head_to_head_table_data[item][homeTeam]}</div>
             <div>{awayTeam} - {head_to_head_table_data[item][awayTeam]}</div>
@@ -294,7 +294,7 @@ const Game = (matchData : MatchData) => {
                       //@ts-ignore
                       const teamData = teams[item];
                       return (
-                        <div>
+                        <div key={key}>
                           <div>{item}</div>
                           <div>Wins - {teamData.W}</div>
                           <div>Draws - {teamData.D}</div>
@@ -338,7 +338,7 @@ const Game = (matchData : MatchData) => {
                 <div>Date - {item}</div>
                 <div>{Object.keys(teams).map((item, key)=>{
                   return (
-                    <div>{item} - {teams[item]}</div>
+                    <div key={key}>{item} - {teams[item]}</div>
                   )
                 })}</div>
               </div>
@@ -358,7 +358,7 @@ const Game = (matchData : MatchData) => {
                 <div>Date - {item}</div>
                 <div>{Object.keys(teams).map((item, key)=>{
                   return (
-                    <div>{item} - {teams[item]}</div>
+                    <div key={key}>{item} - {teams[item]}</div>
                   )
                 })}</div>
               </div>
