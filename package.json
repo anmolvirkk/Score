@@ -18,7 +18,8 @@
     "react-dom": "^18",
     "react-minimal-pie-chart": "^8.4.0",
     "react-range-slider-input": "^3.0.7",
-    "recoil": "^0.7.7"
+    "recoil": "^0.7.7",
+    "ws": "^8.14.2"
   },
   "devDependencies": {
     "@types/node": "^20",

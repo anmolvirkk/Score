@@ -6,8 +6,9 @@ import { PieChart } from 'react-minimal-pie-chart';
 import BottomNavigation from '../BottomSheet';
 import {RecoilRoot} from 'recoil';
 import { useRecoilState } from 'recoil';
-import { searchAtom } from '@/atoms';
+import { minimumGoalsLastMatchAtom, searchAtom } from '@/atoms';
 import Loading from '../Loading';
+import testJSON from './test.json';
 
 const Game = (matchData : MatchData) => {
 
@@ -15,8 +16,8 @@ const Game = (matchData : MatchData) => {
     return null;
   }
 
-  const Heading = ({text}:{text: string}) => {
-    return <div className="bg-primary-700 text-center p-[0.5rem] rounded-[0.5rem] mb-[0.5rem]">{text}</div>
+  const Heading = ({text, className=""}:{text: string, className?: string}) => {
+    return <div className={`bg-primary-700 text-center p-[0.5rem] rounded-[0.5rem] mb-[0.5rem] ${className}`}>{text}</div>
   }
 
   const GameTime = () => {
@@ -83,7 +84,7 @@ const Game = (matchData : MatchData) => {
             {matchData.lastScore.map((item, key) => (
               <div
                 key={key}
-                className={`text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full ${
+                className={`last-match-goals text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full ${
                   isTeamAGreater ? (key === 0 ? 'text-white bg-green-400' : 'text-teal-600 bg-teal-200') : (key === 0 ? 'text-teal-600 bg-teal-200' : 'text-white bg-green-400')
                 }`}
               >
@@ -110,7 +111,7 @@ const Game = (matchData : MatchData) => {
   };
 
   const TeamForm = () => {
-    if(window === undefined){
+    if(typeof window === undefined){
       return null;
     }
     return (
@@ -145,6 +146,269 @@ const Game = (matchData : MatchData) => {
       </div>
     )
   }
+
+  const AdditionalData = () => {
+    const TeamComparison = () => {
+      const GamesWon = () => {
+        const gamesData = matchData.additional_data.compare_teams_table_data.games_won;
+        return Object.keys(gamesData).map((team, key) => {
+          return (
+            <div className="flex gap-[1rem]">
+              <div>Games Won</div>
+              <div key={key}>{team} - {gamesData[team]}</div>
+            </div>
+          )
+        })
+      }
+      const GamesLostOrDraw = () => {
+        const gamesData = matchData.additional_data.compare_teams_table_data.games_lost_or_draw;
+        return Object.keys(gamesData).map((team, key) => {
+          return (
+            <div className="flex gap-[1rem]">
+              <div>Games Lost or Draw</div>
+              <div key={key}>{team} - {gamesData[team]}</div>
+            </div>
+          )
+        })
+      }
+      const GamesLost = () => {
+        const gamesData = matchData.additional_data.compare_teams_table_data.games_lost;
+        return Object.keys(gamesData).map((team, key) => {
+          return (
+            <div className="flex gap-[1rem]">
+              <div>Games Lost</div>
+              <div key={key}>{team} - {gamesData[team]}</div>
+            </div>
+          )
+        })
+      }
+      const GamesDraw = () => {
+        const gamesData = matchData.additional_data.compare_teams_table_data.games_draw;
+        return Object.keys(gamesData).map((team, key) => {
+          return (
+            <div className="flex gap-[1rem]">
+              <div>Games Draw</div>
+              <div key={key}>{team} - {gamesData[team]}</div>
+            </div>
+          )
+        })
+      }
+      const LastFiveGames = () => {
+        const gamesData = matchData.additional_data.compare_teams_table_data.last_five_games;
+        return Object.keys(gamesData).map((team, key) => {
+          return (
+            <div key={key} className="flex gap-[1rem]">
+              <div>Last five games</div>
+              <div key={key}>
+                <div>{team}</div>
+                <div>Wins - {gamesData[team].wins}</div>
+                <div>Wins - {gamesData[team].draws}</div>
+                <div>Wins - {gamesData[team].losses}</div>
+              </div>
+            </div>
+          )
+        })
+      }
+      const LastFiveGamesAgainstEachOther = () => {
+        const gamesData = matchData.additional_data.compare_teams_table_data.last_five_games_against_each_other;
+        return Object.keys(gamesData).map((team, key) => {
+          return (
+            <div key={key} className="flex gap-[1rem]">
+              <div>Last five games agaist each other</div>
+              <div key={key}>
+                <div>{team}</div>
+                <div>Wins - {gamesData[team].wins}</div>
+                <div>Wins - {gamesData[team].draws}</div>
+                <div>Wins - {gamesData[team].losses}</div>
+              </div>
+            </div>
+          )
+        })
+      }
+      return (
+        <div className="flex flex-col gap-[1rem]">
+          <GamesWon />
+          <GamesLostOrDraw />
+          <GamesLost />
+          <GamesDraw />
+          <LastFiveGames />
+          <LastFiveGamesAgainstEachOther />
+        </div>
+      )
+    }
+    const Prediction = () => {
+      const winner = matchData.additional_data.predictions_table_data.winner;
+      const goals = matchData.additional_data.predictions_table_data.goals;
+      const score = matchData.additional_data.predictions_table_data.score;
+      return (
+        <div className="flex flex-col gap-[1rem]">
+          <div>Winner - {winner.team} | Confidence - {winner.confidence}</div>
+          <div>Goals - {goals}</div>
+          <div>Score | {score.winner} - {score.loser}</div>
+        </div>
+      )
+    }
+    const HeadToHead = () => {
+      const head_to_head_table_data = matchData.additional_data.head_to_head_table_data;
+      return Object.keys(head_to_head_table_data).map((item, key) => {
+        const homeTeam = Object.keys(head_to_head_table_data[item])[0];
+        const awayTeam = Object.keys(head_to_head_table_data[item])[1];
+        return (
+          <div>
+            <div>Date - {item}</div>
+            <div>{homeTeam} - {head_to_head_table_data[item][homeTeam]}</div>
+            <div>{awayTeam} - {head_to_head_table_data[item][awayTeam]}</div>
+          </div>
+        )
+      })
+    }
+    const LatestGoals = () => {
+      const latest_games_goals_table_data = matchData.additional_data.latest_games_goals_table_data;
+      return Object.keys(latest_games_goals_table_data).map((item, key) => {
+        // @ts-ignore
+        const teamsData = latest_games_goals_table_data[item];
+        return (
+          <div key={key}>
+            <div>Goals - {item}</div>
+            <div>{Object.keys(teamsData).map((item, key) => {
+              return (
+                <div key={key}>{item} - {teamsData[item]}</div>
+              )
+            })}</div>
+          </div>
+        )
+      })
+    }
+    const PowerRank = () => {
+      const power_rank_table_data = matchData.additional_data.power_rank_table_data;
+      return (
+        <div>
+          {Object.keys(power_rank_table_data).map((item, key)=>{
+            if(item === "h2h"){
+              const teams = power_rank_table_data[item];
+              return (
+                <div key={key}>
+                  <div>Head to Head</div>
+                  <div>
+                    {Object.keys(teams).map((item, key)=>{
+                      //@ts-ignore
+                      const teamData = teams[item];
+                      return (
+                        <div>
+                          <div>{item}</div>
+                          <div>Wins - {teamData.W}</div>
+                          <div>Draws - {teamData.D}</div>
+                          <div>Losses - {teamData.L}</div>
+                          <div>Goals - {teamData.GOALS}</div>
+                          <div>Over 2.5 Goals - {teamData['O2.5']}</div>
+                          <div>Both teams to score - {teamData.BTTS}</div>
+                          <div>Power - {teamData.POWER}</div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )
+            }
+            const team : any = power_rank_table_data[item];
+            return (
+              <div key={key} className="border-2">
+                <div>{item}</div>
+                <div>Wins - {team.W}</div>
+                <div>Draws - {team.D}</div>
+                <div>Losses - {team.L}</div>
+                <div>Goals - {team.GOALS}</div>
+                <div>Over 2.5 Goals - {team['O2.5']}</div>
+                <div>Both teams to score - {team.BTTS}</div>
+                <div>Power - {team.POWER}</div>
+              </div>
+            )
+          })}
+        </div>
+      )
+    }
+    const HomeTeamData = () => {
+      const home_team_table_data = matchData.additional_data.home_team_table_data;
+      return (
+        <div>
+          {Object.keys(home_team_table_data).map((item, key)=>{
+            const teams = home_team_table_data[item];
+            return (
+              <div key={key}>
+                <div>Date - {item}</div>
+                <div>{Object.keys(teams).map((item, key)=>{
+                  return (
+                    <div>{item} - {teams[item]}</div>
+                  )
+                })}</div>
+              </div>
+            )
+          })}
+        </div>
+      )
+    }
+    const AwayTeamData = () => {
+      const away_team_table_data = matchData.additional_data.away_team_table_data;
+      return (
+        <div>
+          {Object.keys(away_team_table_data).map((item, key)=>{
+            const teams = away_team_table_data[item];
+            return (
+              <div key={key}>
+                <div>Date - {item}</div>
+                <div>{Object.keys(teams).map((item, key)=>{
+                  return (
+                    <div>{item} - {teams[item]}</div>
+                  )
+                })}</div>
+              </div>
+            )
+          })}
+        </div>
+      )
+    }
+    const OverallStanding = () => {
+      const overall_standings_table_data = matchData.additional_data.overall_standings_table_data;
+      return (
+        <div>
+          {Object.keys(overall_standings_table_data).map((item, key)=>{
+            const teamData : any = overall_standings_table_data[item];
+            return (
+              <div key={key}>
+                <div>Team - {item}</div>
+                <div>Position - {teamData.position}</div>
+                <div>Goals - {teamData.G}</div>
+                <div>Wins - {teamData.W}</div>
+                <div>Draws - {teamData.D}</div>
+                <div>Losses - {teamData.L}</div>
+                <div>Power - {teamData.P}</div>
+              </div>
+            )
+          })}
+        </div>
+      )
+    }
+    return (
+      <>
+        <Heading text="Team Comparison" className="mb-[1rem] mt-[1rem]" />
+        <TeamComparison />
+        <Heading text="Prediction" className="mb-[1rem] mt-[1rem]" />
+        <Prediction />
+        <Heading text="Head to Head" className="mb-[1rem] mt-[1rem]" />
+        <HeadToHead />
+        <Heading text="Latest Goals" className="mb-[1rem] mt-[1rem]" />
+        <LatestGoals />
+        <Heading text="Power Rank" className="mb-[1rem] mt-[1rem]" />
+        <PowerRank />
+        <Heading text="Home Team Data" className="mb-[1rem] mt-[1rem]" />
+        <HomeTeamData />
+        <Heading text="Away Team Data" className="mb-[1rem] mt-[1rem]" />
+        <AwayTeamData />
+        <Heading text="Overall Standings" className="mb-[1rem] mt-[1rem]" />
+        <OverallStanding />
+      </>
+    )
+  }
   
   return (
     <div className='game m-[0] my-[1.5rem] sm:m-[2rem] p-[2rem] rounded-[1rem] bg-primary-600 border-x-2 shadow-md text-white border-gray-600 max-w-[25rem] sm:min-w-[25rem] w-[calc(100%-3rem)] sm:w-[calc(25%-8rem)]'>
@@ -152,17 +416,20 @@ const Game = (matchData : MatchData) => {
       <GameOdds />
       <LastScore />
       <TeamForm />
+      <AdditionalData />
     </div>
   )
 }
 
 const Games = () => {
 
-  const [gamesData, setGamesData] = useState<MatchData[] | null>(null);
+  const testData : any = testJSON;
+
+  const [gamesData, setGamesData] = useState<MatchData[] | null>(testData);
 
   // const getGamesData = async () => {
   //   const response = await fetch('/api/games');
-  //   if(response){
+  //   if(response && response.ok){
   //     const gamesData : any = await response.json();
   //     if(gamesData){
   //       setGamesData(gamesData);
@@ -170,7 +437,9 @@ const Games = () => {
   //   }
   // }
 
-  // getGamesData();
+  // if(!gamesData){
+  //   getGamesData();
+  // }
 
   const isotope = useRef<any>();
 
@@ -245,6 +514,23 @@ const Games = () => {
     }
   }, [search, gamesData])
 
+  const [minimumGoalsLastMatchValue] = useRecoilState(minimumGoalsLastMatchAtom);
+
+  useEffect(() => {
+    if(isotope.current  && gamesData && gamesData.length > 0){
+      isotope.current.arrange({filter: (item:any) => {
+        const lastMatchGoals = item.querySelectorAll('.last-match-goals');
+        if(lastMatchGoals){
+          let matchFound = false;
+          const totalGoals = lastMatchGoals.map((goal:any) => Number.parseInt(goal.textContent?.substring(0, 1))).reduce((a:number, b:number)=> a + b);
+          if(minimumGoalsLastMatchValue <= totalGoals){
+            matchFound = true;
+          }
+          return matchFound;
+        }
+      }})
+    }
+  }, [minimumGoalsLastMatchValue, gamesData])
     
   if(!gamesData || gamesData?.length === 0){
     return <Loading />;
