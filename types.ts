@@ -72,10 +72,10 @@ export type MatchData = {
       "over 3.5": {
         [team: string]: string;
       };
-      average_scored: {
+      "average scored": {
         [team: string]: number;
       };
-      average_conceded: {
+      "average conceded": {
         [team: string]: number;
       };
     };

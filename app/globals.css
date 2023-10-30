@@ -63,4 +63,5 @@ html, body {
 }
 .single-thumb .range-slider__thumb {
   background-color: #00D26A !important;
+  z-index: 1 !important;
 }
