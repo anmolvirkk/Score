@@ -391,12 +391,12 @@ const Games = () => {
   // if(!gamesData){
   //   getGamesData();
   // }
+  
+  const [filters] = useRecoilState(filtersAtom);
     
   if(!gamesData || gamesData?.length === 0){
     return <Loading />;
   }
-
-  const [filters] = useRecoilState(filtersAtom);
 
   const getFilteredGames = () => {
 
