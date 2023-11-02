@@ -37,91 +37,23 @@ export async function GET() {
         const awayTeam = $game.find('.away .teamname').text();
         const oddsElements = $game.find('.sizeodd span');
         const oddsData = oddsElements.toArray().map((el) => $(el).text());
-        const lastScoreData = $game.find('.lastscore').text();
-        const lastScore = lastScoreData !== "" ? lastScoreData.split(':').map((el, index) => {
-          return {
-            goals: parseFloat(el),
-            team: index === 0 ? homeTeam : awayTeam
-          }
-        }) : [null, null];
-        const tipData = $game.find('.tipdisplay').text();
-        let tip = 'N/A';
-        if(tipData){
-          switch (tipData) {
-            case "1":
-              tip = homeTeam;
-            break;
-            case "2":
-              tip = awayTeam;
-            break;
-            case "X":
-              tip = 'Draw';
-            break;
-            case "X2":
-              tip = awayTeam + ' or Draw';
-            break;
-            case "1X":
-              tip = homeTeam + ' or Draw';
-            break;
-            case "12":
-              tip = homeTeam + ' or ' + awayTeam;
-            break;
-            default:
-              tip = 'N/A';
-            break;
-          }
-        }
-
-        if(lastScore[0]?.goals && lastScore[1]?.goals){
-
-            const homeTeamFormStats = $game.find('.home .form-stats').toArray().map((el) => $(el).text());
-            const awayTeamFormStats = $game.find('.away .form-stats').toArray().map((el) => $(el).text());
+        
+        if(homeTeam !== "" && awayTeam !== "" && oddsData.length > 0){
             
-            const countWinsAndLosses = (formStats) => {
-              const wins = formStats.filter((stat) => stat === 'W').length;
-              const losses = formStats.filter((stat) => stat === 'L').length;
-              const draws = formStats.filter((stat) => stat === 'D').length;
-              return { wins, losses, draws };
+            const odds = {
+              [homeTeam]: parseFloat(oddsData[0]),
+              Draw: parseFloat(oddsData[1]),
+              [awayTeam]: parseFloat(oddsData[2]),
             };
-    
-            if(homeTeam !== "" && awayTeam !== "" && oddsData.length > 0){
-
-                      const homeTeamStats = countWinsAndLosses(homeTeamFormStats);
-                      const awayTeamStats = countWinsAndLosses(awayTeamFormStats);      
-      
-                              const teamForm = {
-                                [homeTeam]: homeTeamStats,
-                                [awayTeam]: awayTeamStats
-                              }
-                
-                              const odds = {
-                                [homeTeam]: parseFloat(oddsData[0]),
-                                Draw: parseFloat(oddsData[1]),
-                                [awayTeam]: parseFloat(oddsData[2]),
-                              };
-                            
-                              const gameInfo = {
-                                url,
-                                date,
-                                time,
-                                odds,
-                                tip,
-                                lastScore,
-                                teamForm
-                              };
-                    
-                              gameData.push(gameInfo);
-      
-                            
-      
-                          
-                        
-                      
-              
-    
-            }
-
           
+            const gameInfo = {
+              url,
+              date,
+              time,
+              odds,
+            };
+  
+            gameData.push(gameInfo);
 
         }
       
@@ -158,133 +90,9 @@ export async function GET() {
       const html = response.data;
       const $ = cheerio.load(html);
 
-      const tables = $('.tablepredictions');
+      let head_to_head_table_data = [];
 
-      let compare_teams_table_data = {
-        games_won: {},
-        games_lost_or_draw: {},
-        games_lost: {},
-        games_draw: {},
-        last_five_games: {},
-        last_five_games_against_each_other: {}
-      };
-
-      let predictions_table_data = {
-        winner: {
-          confidence: 0,
-          team: ''
-        },
-        goals: 0,
-        score: ''
-      }
-
-      let latest_games_goals_table_data = {}
-
-      tables.each((index, element) => {
-        if(index === 1) {
-          const compare_teams_table = $(element);
-          const compare_teams_table_heading_1 = compare_teams_table.find('th:nth-of-type(1)').text();
-          const compare_teams_table_heading_2 = compare_teams_table.find('th:nth-of-type(2)').text();
-          const compare_teams_table_rows = compare_teams_table.find('td');
-          if(compare_teams_table_heading_1 && compare_teams_table_heading_2){
-            let compare_teams_table_row_number = 0;
-            let heading = compare_teams_table_heading_2;
-            compare_teams_table_rows.each((index, element) => {
-              if($(element).text() !== "Last five games" && $(element).text() !== "Last 5 home/away only"){
-                heading = heading === compare_teams_table_heading_2 ? compare_teams_table_heading_1 : compare_teams_table_heading_2;
-                const compare_teams_table_data_key = Object.keys(compare_teams_table_data)[compare_teams_table_row_number];
-                function getWinDrawLossCounts(str) {
-                  let wins = 0;
-                  let draws = 0;
-                  let losses = 0;
-                
-                  for (const char of str) {
-                    if (char === 'W') {
-                      wins++;
-                    } else if (char === 'D') {
-                      draws++;
-                    } else if (char === 'L') {
-                      losses++;
-                    }
-                  }
-                
-                  return { wins, draws, losses };
-                }
-                if($(element).find('.form-stats').length > 0){
-                  compare_teams_table_data = {...compare_teams_table_data, [compare_teams_table_data_key]: {...compare_teams_table_data[compare_teams_table_data_key], [heading]: getWinDrawLossCounts($(element).text())}};
-                }else{
-                  const dataString = $(element).text();
-                  const dataNumber = parseFloat(dataString.match(/\d+(\.\d{1,2})?/)[0], 10);
-                  compare_teams_table_data = {...compare_teams_table_data, [compare_teams_table_data_key]: {...compare_teams_table_data[compare_teams_table_data_key], [heading]: dataNumber}};
-                }
-                if(heading === compare_teams_table_heading_2){
-                  compare_teams_table_row_number++;
-                }
-              }
-            })
-          }
-        }
-        if(index === 2) {
-          const predictions_table = $(element);
-          const predictions_table_rows = predictions_table.find('td');
-          let predictions_table_row_number = 0;
-          predictions_table_rows.each((_, element) => {
-              const predictions_table_data_key = Object.keys(predictions_table_data)[predictions_table_row_number];
-              const dataString = $(element).text().toLowerCase();
-              let formattedData = null;
-              switch (predictions_table_data_key) {
-                case 'goals':
-                  formattedData = parseFloat(dataString.match(/\d+(\.\d{1,2})?/)[0]);
-                break;
-                case 'score':
-                  const scoreData = dataString.match(/\d+:\d+/)[0];
-                  const teamScores = scoreData.split(':');
-                  const team1Score = parseFloat(teamScores[0]);
-                  const team2Score = parseFloat(teamScores[1]);
-                  formattedData = {
-                    winner: team1Score > team2Score ? team1Score : team2Score,
-                    loser: team1Score > team2Score ? team2Score : team1Score
-                  }
-                break;
-                case 'winner':
-                  const parts = dataString.split(" on ");
-                  if(parts.length === 2){
-                    const confidence = parseFloat(parts[0]);
-                    const team = parts[1];
-                    formattedData = { confidence, team };
-                  }
-                break;
-              }
-              predictions_table_data = {...predictions_table_data, [predictions_table_data_key]: formattedData};
-              predictions_table_row_number++;
-          })
-        }
-        if(index === 3){
-          const latest_games_goals_table = $(element);
-          const latest_games_goals_table_rows = latest_games_goals_table.find('td');
-          const latest_games_goals_table_headings = latest_games_goals_table.find('th');
-          let key = null;
-          latest_games_goals_table_rows.each((_, element) => {
-              const colSpan = $(element).attr('colspan');
-              if(colSpan){
-                key = $(element).text().toLowerCase();
-                const parent = $(element).parent();
-                const nextSibling = parent.next();
-                const nextCells = nextSibling.find('td');
-                const nextCell1 = nextCells.eq(0).text();
-                const nextCell2 = nextCells.eq(1).text();
-                const heading1 = latest_games_goals_table_headings.eq(0).text();
-                const heading2 = latest_games_goals_table_headings.eq(1).text();
-                latest_games_goals_table_data[key] = {
-                  [heading1]: nextCell1.includes('%') ? nextCell1 : parseFloat(nextCell1),
-                  [heading2]: nextCell2.includes('%') ? nextCell2 : parseFloat(nextCell2)
-                }
-              }
-          })
-        }
-      })
-
-      let head_to_head_table_data = {};
+      let head_to_head_data = [];
 
       let home_team_table_data = {};
 
@@ -297,17 +105,224 @@ export async function GET() {
           
           const lastResults = $(element).find('.lastresults');
 
+          let head_to_head_goals = {};
+
           lastResults.each((_, element) => {
                 const date = $(element).find('.date-time-wrapper > small > span').text();
                 const home = $(element).find('.teams > .home').text();
                 const away = $(element).find('.teams > .away').text();
                 const homeScore = $(element).find('.score-container > .home').text();
                 const awayScore = $(element).find('.score-container > .away').text();
-                head_to_head_table_data = {...head_to_head_table_data, [date]: {
-                  [home]: parseFloat(homeScore),
-                  [away]: parseFloat(awayScore)
-                }};
+                if(!head_to_head_goals[home]){
+                  head_to_head_goals[home] = []
+                }
+                if(!head_to_head_goals[away]){
+                  head_to_head_goals[away] = []
+                }
+                head_to_head_goals[home] = [...head_to_head_goals[home], parseFloat(homeScore)];
+                head_to_head_goals[away] = [...head_to_head_goals[away], parseFloat(awayScore)];
+                head_to_head_table_data = [...head_to_head_table_data, {
+                  date,
+                  home: {
+                    team: home,
+                    score: parseFloat(homeScore)
+                  },
+                  away: {
+                    team: away,
+                    score: parseFloat(awayScore)
+                  }
+                }];
           })
+
+          function getTotalGoals(goals) {
+            let totalGoals = 0;
+          
+            totalGoals += goals.reduce((sum, goalsInGame) => sum + goalsInGame, 0);
+          
+            return totalGoals;
+          }
+
+          function countGamesWithGoalsThresholds(head_to_head_goals) {
+          
+            const thresholds = [0.5, 1.5, 2.5, 3.5, 4.5];
+
+            const gamesCountByThreshold = [];
+          
+            for (const threshold of thresholds) {
+
+              let teamsStats = [];
+          
+              for (const team in head_to_head_goals) {
+
+                const matches = head_to_head_goals[team];
+
+                const totalNumberOfMatches = matches.length;
+
+                const matches_over_threshold = matches.reduce((count, goalsInGame) => (goalsInGame > threshold ? count + 1 : count), 0);
+                
+                const percentage_over_threshold = ((matches_over_threshold / totalNumberOfMatches) * 100).toFixed(2) + '%';
+
+                teamsStats.push({
+                  team,
+                  matches_over_threshold,
+                  percentage_over_threshold,
+                });
+
+              }
+          
+              gamesCountByThreshold.push({
+                threshold,
+                teams: teamsStats,
+              });
+
+            }
+          
+            return gamesCountByThreshold;
+          }
+
+          function calculateForm(teamName, matches) {
+            let wins = 0;
+            let losses = 0;
+            let draws = 0;
+          
+            for (const match of matches) {
+              const homeTeam = match.home.team;
+              const awayTeam = match.away.team;
+              const homeScore = match.home.score;
+              const awayScore = match.away.score;
+          
+              if (homeTeam === teamName) {
+                if (homeScore > awayScore) {
+                  wins++;
+                } else if (homeScore < awayScore) {
+                  losses++;
+                } else {
+                  draws++;
+                }
+              } else if (awayTeam === teamName) {
+                if (awayScore > homeScore) {
+                  wins++;
+                } else if (awayScore < homeScore) {
+                  losses++;
+                } else {
+                  draws++;
+                }
+              }
+            }
+          
+            return { wins, losses, draws };
+          }
+
+          function calculateAverageGoals(teamName, matches) {
+            let totalGoalsScored = 0;
+            let totalGoalsConceded = 0;
+          
+            for (const match of matches) {
+              const homeTeam = match.home.team;
+              const awayTeam = match.away.team;
+              const homeScore = match.home.score;
+              const awayScore = match.away.score;
+          
+              if (homeTeam === teamName) {
+                totalGoalsScored += homeScore;
+                totalGoalsConceded += awayScore;
+              } else if (awayTeam === teamName) {
+                totalGoalsScored += awayScore;
+                totalGoalsConceded += homeScore;
+              }
+            }
+          
+            const totalMatches = matches.length;
+            const averageScored = (totalGoalsScored / totalMatches).toFixed(2);
+            const averageConceded = (totalGoalsConceded / totalMatches).toFixed(2);
+          
+            return { averageScored, averageConceded };
+          }
+
+          const homeTeamAverage = calculateAverageGoals(Object.keys(head_to_head_goals)[0], head_to_head_table_data);
+
+          const calculatePridictionWinner = (head_to_head_goals, head_to_head_table_data) => {
+            const team1Form = calculateForm(Object.keys(head_to_head_goals)[0], head_to_head_table_data);
+            const team1Score = team1Form.wins - team1Form.losses - team1Form.draws;
+            const team2Form = calculateForm(Object.keys(head_to_head_goals)[1], head_to_head_table_data);
+            const team2Score = team2Form.wins - team2Form.losses - team2Form.draws;
+            const totalScore = team1Form.wins + team1Form.losses + team1Form.draws;
+            let winner = null;
+            let loser = null;
+            if(team1Score === totalScore){
+              winner = Object.keys(head_to_head_goals)[0];
+              loser = Object.keys(head_to_head_goals)[1];
+            }else if(team2Score === totalScore){
+              winner = Object.keys(head_to_head_goals)[1];
+              loser = Object.keys(head_to_head_goals)[0];
+            }
+            const loserForm = calculateForm(loser, head_to_head_table_data);
+            const confidence = ((loserForm.losses - loserForm.wins - loserForm.draws)/totalScore) * 100;
+            if(!winner){
+              return null
+            }
+            return {team:winner, confidence: confidence.toFixed(0) + '%'}
+          }
+
+          
+        function findHighestAndLowestCombinedGoals(matches) {
+
+          let highestTotalGoals = null;
+          let lowestTotalGoals = null;
+
+          for (const match of matches) {
+
+            const totalGoals = match.home.score + match.away.score;
+
+            if(!highestTotalGoals){
+                highestTotalGoals = totalGoals
+            }
+
+            if(!lowestTotalGoals){
+                lowestTotalGoals = totalGoals
+            }
+
+            if (totalGoals > highestTotalGoals) {
+              highestTotalGoals = totalGoals;
+            }
+
+            if (totalGoals < lowestTotalGoals) {
+              lowestTotalGoals = totalGoals;
+            }
+
+          }
+
+          return {
+            highestTotalGoals,
+            lowestTotalGoals,
+          };
+        }
+
+          head_to_head_data = {
+            goals: {
+              [Object.keys(head_to_head_goals)[0]]: getTotalGoals(head_to_head_goals[Object.keys(head_to_head_goals)[0]]),
+              [Object.keys(head_to_head_goals)[1]]: getTotalGoals(head_to_head_goals[Object.keys(head_to_head_goals)[1]]),
+              total: getTotalGoals(head_to_head_goals[Object.keys(head_to_head_goals)[0]]) + getTotalGoals(head_to_head_goals[Object.keys(head_to_head_goals)[1]])
+            },
+            form: {
+              [Object.keys(head_to_head_goals)[0]]: calculateForm(Object.keys(head_to_head_goals)[0], head_to_head_table_data),
+              [Object.keys(head_to_head_goals)[1]]: calculateForm(Object.keys(head_to_head_goals)[1], head_to_head_table_data)
+            },
+            average_scored: {
+              [Object.keys(head_to_head_goals)[0]]: parseFloat(homeTeamAverage.averageScored),
+              [Object.keys(head_to_head_goals)[1]]: parseFloat(homeTeamAverage.averageConceded),
+              total: (parseFloat(homeTeamAverage.averageScored) + parseFloat(homeTeamAverage.averageConceded)).toFixed(2),
+            },
+            total_matches: head_to_head_goals[Object.keys(head_to_head_goals)[0]].length,
+            thresholds: countGamesWithGoalsThresholds(head_to_head_goals),
+            prediction: {
+              goals: {
+                over: findHighestAndLowestCombinedGoals(head_to_head_table_data).lowestTotalGoals ? findHighestAndLowestCombinedGoals(head_to_head_table_data).lowestTotalGoals-1.5 > 0 ? findHighestAndLowestCombinedGoals(head_to_head_table_data).lowestTotalGoals-0.5 : null : null,
+                under: findHighestAndLowestCombinedGoals(head_to_head_table_data).highestTotalGoals ? findHighestAndLowestCombinedGoals(head_to_head_table_data).highestTotalGoals+1.5 < 7 ? findHighestAndLowestCombinedGoals(head_to_head_table_data).highestTotalGoals+0.5 : null : null,
+              },
+              winner: calculatePridictionWinner(head_to_head_goals, head_to_head_table_data)
+            }
+          };
 
         }
         if(index === 1){
@@ -348,16 +363,12 @@ export async function GET() {
 
       const extraTables = $('.extratable');
 
-      let power_rank_table_data = {
-        h2h: {}
-      }
-
-      extraTables.each((index, tableElement) => {
+      extraTables.each((_, tableElement) => {
         const table = $(tableElement);
         const rows = table.find('tr');
 
         const headers = [];
-        rows.eq(0).find('th').each((j, header) => {
+        rows.eq(0).find('th').each((_, header) => {
           headers.push($(header).text());
         });
 
@@ -375,18 +386,9 @@ export async function GET() {
               rowData[headers[j]] = cellText;
             }
           });
-          if(team){
-            if(index === 0){
-              power_rank_table_data['h2h'][team] = rowData;
-            }else{
-              power_rank_table_data[team] = rowData;
-            }
-          }
 
         });
       });
-
-      let overall_standings_table_data = {}
 
       const leagueStandings = $('.LeagueStandings table:not(.extratable)');
 
@@ -394,7 +396,7 @@ export async function GET() {
 
       const leagueStandingsHeaders = [];
 
-      leagueStandings.find('tr').eq(0).find('th').each((j, header) => {
+      leagueStandings.find('tr').eq(0).find('th').each((_, header) => {
         leagueStandingsHeaders.push($(header).text());
       });
 
@@ -418,15 +420,12 @@ export async function GET() {
               rowData[leagueStandingsHeaders[j]] = cellText;
             }
           });
-          if(team){
-            overall_standings_table_data[team] = rowData;
-          }
 
         }
 
       });
 
-      return {...game, additional_data: {compare_teams_table_data, predictions_table_data, head_to_head_table_data, latest_games_goals_table_data, power_rank_table_data, home_team_table_data, away_team_table_data, overall_standings_table_data}};
+      return {...game, head_to_head_table_data, head_to_head_data, home_team_table_data, away_team_table_data};
 
     } catch (err) {
       return null;
