@@ -171,9 +171,8 @@ const Game = (matchData : MatchData) => {
             {title: 'Losses', value: formData.losses, color: "rgb(30,30,40)"}
           ];
           return (
-            <div className="flex flex-col items-center justify-center">
+            <div key={key} className="flex flex-col items-center justify-center">
               <PieChart 
-                key={key}
                 data={data}
                 className="w-[10rem]"
                 radius={10}
@@ -301,9 +300,9 @@ const Game = (matchData : MatchData) => {
                       }
                       if(key === 0){
                         return (
-                          <div className="flex flex-col h-full relative">
+                          <div key={index} className="flex flex-col h-full relative">
                             <div className="opacity-[0.3] absolute top-[-2.5rem]">{item.team}</div>
-                            <div key={index} className="relative flex items-center justify-center w-[7rem] h-full">
+                            <div className="relative flex items-center justify-center w-[7rem] h-full">
                               <div className='p-[1rem] absolute z-[1]'>{item.percentage_over_threshold}</div>
                               <div className={`absolute top-[0] w-full h-full ${color}`}></div>
                             </div>
