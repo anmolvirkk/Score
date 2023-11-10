@@ -9,10 +9,6 @@ import { filtersAtom } from '@/atoms';
 import Loading from '../Loading';
 import testJSON from './test.json';
 
-function capitalize(string:string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
 const getMonth = (number:number) => {
   const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -201,80 +197,6 @@ const Game = (matchData : MatchData) => {
     )
   }
 
-  const MoreGoalsInfo = (data : {
-    goals: {
-      [team: string]: number;
-      total: number;
-    };
-    form: {
-      [team: string]: {
-        wins: number;
-        losses: number;
-        draws: number;
-      };
-    };
-    average_scored: {
-      team: string;
-      goals: number;
-    }[];
-    minMaxGoals: {
-      highestTotalGoals: {
-        score: number;
-        teams: {
-          team: string;
-          score: number;
-        }[]
-      };
-      lowestTotalGoals: {
-        score: number;
-        teams: {
-          team: string;
-          score: number;
-        }[]
-      };
-      highestTeam1Score: {
-        team: string,
-        score: number
-      };
-      lowestTeam1Score: {
-        team: string,
-        score: number
-      };
-      highestTeam2Score: {
-        team: string,
-        score: number
-      };
-      lowestTeam2Score: {
-        team: string,
-        score: number
-      };
-    };
-  }[]) => {
-    const dataArray = Object.values(data);
-    if(dataArray && dataArray.length > 0){
-      return (
-        <div className='flex flex-col mt-[1.5rem] gap-[1rem]'>
-          <div>Combined</div>
-          <div className='flex gap-[1rem]'>
-            <div>
-              <div>Average Goals</div>
-              <div className='font-[700] text-[1.5rem]'>{dataArray.reduce((a, b) => a + b.goals.total, 0)/dataArray.length}</div>
-            </div>
-            <div>
-              <div>Max Goals</div>
-              <div className='font-[700] text-[1.5rem]'>{Math.max(...dataArray.map(e=>e.goals.total))}</div>
-            </div>
-            <div>
-              <div>Min Goals</div>
-              <div className='font-[700] text-[1.5rem]'>{Math.min(...dataArray.map(e=>e.goals.total))}</div>
-            </div>
-          </div>
-        </div>
-      )
-    }
-    return null
-  }
-
   if(!matchData.head_to_head_data.minMaxGoals.lowestTotalGoals.teams){
     return null;
   }
@@ -433,6 +355,7 @@ const Game = (matchData : MatchData) => {
       </div>
     </>
   )
+
 }
 
 const Games = () => {
@@ -472,6 +395,46 @@ const Games = () => {
     let minimumMatches = 4;
     if(minimumMatches){
       results = results.filter(e=>e?.head_to_head_table_data && Object.keys(e.head_to_head_table_data).length >= minimumMatches);
+    }
+
+    // let minimumHomeCombinedGoals = 1;
+    // if(minimumHomeCombinedGoals){
+    //   results = results.filter(e=>e.home_team_data.minMaxGoals.lowestTotalGoals.score>=minimumHomeCombinedGoals)
+    // }
+
+    let maxHomeCombinedGoals = 5;
+    if(maxHomeCombinedGoals){
+      results = results.filter(e=>e.home_team_data.minMaxGoals.highestTotalGoals.score<=maxHomeCombinedGoals)
+    }
+
+    // let minimumHomeGoals = 1;
+    // if(minimumHomeGoals){
+    //   results = results.filter(e=>e.home_team_data.minMaxGoals.lowestTeamScore.score>=minimumHomeGoals)
+    // }
+
+    // let minimumAwayCombinedGoals = 1;
+    // if(minimumAwayCombinedGoals){
+    //   results = results.filter(e=>e.away_team_data.minMaxGoals.lowestTotalGoals.score>=minimumAwayCombinedGoals)
+    // }
+
+    let maxAwayCombinedGoals = 5;
+    if(maxAwayCombinedGoals){
+      results = results.filter(e=>e.away_team_data.minMaxGoals.highestTotalGoals.score<=maxAwayCombinedGoals)
+    }
+
+    // let minimumAwayGoals = 1;
+    // if(minimumAwayGoals){
+    //   results = results.filter(e=>e.away_team_data.minMaxGoals.lowestTeamScore.score>=minimumAwayGoals)
+    // }
+    
+    // let minCombinedGoals = 1;
+    // if(minCombinedGoals){
+    //   results = results.filter(e=>e.head_to_head_data.minMaxGoals.lowestTotalGoals.score>=minCombinedGoals)
+    // }
+    
+    let maxCombinedGoals = 5;
+    if(maxCombinedGoals){
+      results = results.filter(e=>e.head_to_head_data.minMaxGoals.highestTotalGoals.score<=maxCombinedGoals)
     }
   
     return results;
