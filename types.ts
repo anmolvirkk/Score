@@ -29,37 +29,41 @@ export type MatchData = {
       };
     };
     average_scored: {
-      [team: string]: number;
-    };
-    total_matches: number;
-    thresholds: {
-      threshold: number;
-      teams: {
-        team: string;
-        matches_over_threshold: number;
-        percentage_over_threshold: string;
-      }[];
+      team: string;
+      goals: number;
     }[];
-    prediction: {
-      goals: {
-        over: null | number;
-        under: null | number;
+    minMaxGoals: {
+      highestTotalGoals: {
+        score: number;
+        teams: {
+          team: string;
+          score: number;
+        }[]
       };
-      winner: null | {
-        team: string;
-        confidence: string;
+      lowestTotalGoals: {
+        score: number;
+        teams: {
+          team: string;
+          score: number;
+        }[]
+      };
+      highestTeam1Score: {
+        team: string,
+        score: number
+      };
+      lowestTeam1Score: {
+        team: string,
+        score: number
+      };
+      highestTeam2Score: {
+        team: string,
+        score: number
+      };
+      lowestTeam2Score: {
+        team: string,
+        score: number
       };
     };
-    powerScale: {
-      goalScale: number,
-      winScale: number,
-      lossScale: number,
-      drawScale: number,
-      averageScoredScale: number,
-      thresholdScale: number,
-      team1: string;
-      team2: string;
-    }
   };
   home_team_table_data: {
     date: string;
@@ -85,38 +89,34 @@ export type MatchData = {
       };
     };
     average_scored: {
-      [team: string]: number;
-    };
-    total_matches: number;
-    thresholds: {
-      threshold: number;
-      teams: {
-        team: string;
-        matches_over_threshold: number;
-        percentage_over_threshold: string;
-      }[];
+      team: string;
+      goals: number;
     }[];
-    prediction: {
-      goals: {
-        over: null | number;
-        under: null | number;
+    minMaxGoals: {
+      highestTotalGoals: {
+        score: number;
+        teams: {
+          team: string;
+          score: number;
+        }[]
       };
-      winner: null | {
-        team: string;
-        confidence: string;
+      lowestTotalGoals: {
+        score: number;
+        teams: {
+          team: string;
+          score: number;
+        }[]
+      };
+      highestTeamScore: {
+        team: string,
+        score: number
+      };
+      lowestTeamScore: {
+        team: string,
+        score: number
       };
     };
-    powerScale: {
-      goalScale: number,
-      winScale: number,
-      lossScale: number,
-      drawScale: number,
-      averageScoredScale: number,
-      thresholdScale: number,
-      team1: string;
-      team2: string;
-    }
-  }[];
+  };
   away_team_table_data: {
     date: string;
     home: {
@@ -141,36 +141,32 @@ export type MatchData = {
       };
     };
     average_scored: {
-      [team: string]: number;
-    };
-    total_matches: number;
-    thresholds: {
-      threshold: number;
-      teams: {
-        team: string;
-        matches_over_threshold: number;
-        percentage_over_threshold: string;
-      }[];
+      team: string;
+      goals: number;
     }[];
-    prediction: {
-      goals: {
-        over: null | number;
-        under: null | number;
+    minMaxGoals: {
+      highestTotalGoals: {
+        score: number;
+        teams: {
+          team: string;
+          score: number;
+        }[]
       };
-      winner: null | {
-        team: string;
-        confidence: string;
+      lowestTotalGoals: {
+        score: number;
+        teams: {
+          team: string;
+          score: number;
+        }[]
+      };
+      highestTeamScore: {
+        team: string,
+        score: number
+      };
+      lowestTeamScore: {
+        team: string,
+        score: number
       };
     };
-    powerScale: {
-      goalScale: number,
-      winScale: number,
-      lossScale: number,
-      drawScale: number,
-      averageScoredScale: number,
-      thresholdScale: number,
-      team1: string;
-      team2: string;
-    }
-  }[];
+  };
 };
