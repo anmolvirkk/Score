@@ -47,7 +47,7 @@ const Game = (matchData : MatchData) => {
     }
 
     return (
-      <div className='game flex w-full opacity-[0.5] gap-[0.5rem]'>
+      <div className='game flex w-full text-[0.8rem] opacity-[0.3] gap-[0.5rem]'>
         <div>{matchData.date?.split('.')[0]} {matchData.date && getMonth(parseInt(matchData.date?.split('.')[1]))}</div>
         <div>|</div>
         <div>{convertTo12HourFormat(matchData.time)}</div>
@@ -58,11 +58,11 @@ const Game = (matchData : MatchData) => {
 
   const GameOdds = () => {
     return (
-      <div className='flex gap-[3rem] my-[2rem] overflow-x-auto'>
+      <div className='flex gap-[3rem] mt-[1.5rem]'>
         {Object.keys(matchData.odds).map((item, key) => (
           <div className='flex flex-col items-center justify-between gap-[0.5rem] w-full' key={key}>
-            <div className='text-center game-team'>{item}</div>
-            <div className="flex flex-col items-center"><span className="opacity-[0.75]">{matchData.odds[item]}</span></div>
+            <div className={`text-center game-team ${item === "Draw" ? 'opacity-[0.15]' : ''}`}>{item === "Draw" ? "x" : item}</div>
+            <div className="flex flex-col items-center opacity-[0.5]"><span className="opacity-[0.75]">{matchData.odds[item]}</span></div>
           </div>
         ))}
       </div>
@@ -203,14 +203,14 @@ const Game = (matchData : MatchData) => {
   
   return (
     <>
-      <div className='game p-[2rem] rounded-[1rem] bg-primary-600 border-x-2 shadow-md text-white border-gray-900 gap-[5rem] max-w-[90vw] overflow-x-auto'>
+      <div className='game p-[1.5rem] w-full md:w-fit rounded-[1rem] bg-primary-600 border-x-2 shadow-md text-white border-gray-900 gap-[5rem] md:max-w-[90vw]'>
         <div className='flex gap-[1rem]'>
           <div className="w-[20rem]">
             <GameTime />
             <GameOdds />
           </div>
         </div>
-        <div className='flex gap-[1rem]'>
+        {/* <div className='flex gap-[1rem]'>
           <div>
               <Heading text="Home Matches" className="mb-[1rem] mt-[1rem]" />
               <LastScore table_data={matchData.home_team_table_data} />
@@ -237,7 +237,7 @@ const Game = (matchData : MatchData) => {
                   <div className='flex gap-[1rem]'>
                     <div>
                       <div>Average Goals</div>
-                      <div className='font-[700] text-[1.5rem]'>{matchData.home_team_data.average_scored.reduce((a, b) => a + b.goals, 0)}</div>
+                      <div className='font-[700] text-[1.5rem]'>{matchData.home_team_data.average_scored.reduce((a, b) => a + b.goals, 0).toFixed(1)}</div>
                     </div>
                     <div>
                       <div>Max Goals</div>
@@ -278,7 +278,7 @@ const Game = (matchData : MatchData) => {
                 <div className='flex gap-[1rem]'>
                   <div>
                     <div>Average Goals</div>
-                    <div className='font-[700] text-[1.5rem]'>{matchData.head_to_head_data.average_scored.reduce((a, b) => a + b.goals, 0)}</div>
+                    <div className='font-[700] text-[1.5rem]'>{matchData.head_to_head_data.average_scored.reduce((a, b) => a + b.goals, 0).toFixed(1)}</div>
                   </div>
                   <div>
                     <div>Max Goals</div>
@@ -336,7 +336,7 @@ const Game = (matchData : MatchData) => {
                   <div className='flex gap-[1rem]'>
                     <div>
                       <div>Average Goals</div>
-                      <div className='font-[700] text-[1.5rem]'>{matchData.away_team_data.average_scored.reduce((a, b) => a + b.goals, 0)}</div>
+                      <div className='font-[700] text-[1.5rem]'>{matchData.away_team_data.average_scored.reduce((a, b) => a + b.goals, 0).toFixed(1)}</div>
                     </div>
                     <div>
                       <div>Max Goals</div>
@@ -351,7 +351,7 @@ const Game = (matchData : MatchData) => {
               </div>
               <TeamForm form={matchData.away_team_data.form} />
           </div>
-        </div>
+        </div> */}
       </div>
     </>
   )
@@ -402,39 +402,69 @@ const Games = () => {
     //   results = results.filter(e=>e.home_team_data.minMaxGoals.lowestTotalGoals.score>=minimumHomeCombinedGoals)
     // }
 
-    let maxHomeCombinedGoals = 5;
-    if(maxHomeCombinedGoals){
-      results = results.filter(e=>e.home_team_data.minMaxGoals.highestTotalGoals.score<=maxHomeCombinedGoals)
-    }
+    // let maxHomeCombinedGoals = 5;
+    // if(maxHomeCombinedGoals){
+    //   results = results.filter(e=>e.home_team_data.minMaxGoals.highestTotalGoals.score<=maxHomeCombinedGoals)
+    // }
+
+    // let minMaxHomeCombinedGoals = 5;
+    // if(minMaxHomeCombinedGoals){
+    //   results = results.filter(e=>e.home_team_data.minMaxGoals.highestTotalGoals.score>=minMaxHomeCombinedGoals)
+    // }
 
     // let minimumHomeGoals = 1;
     // if(minimumHomeGoals){
     //   results = results.filter(e=>e.home_team_data.minMaxGoals.lowestTeamScore.score>=minimumHomeGoals)
     // }
 
+    let minMaxHomeGoals = 1;
+    if(minMaxHomeGoals){
+      results = results.filter(e=>e.home_team_data.minMaxGoals.highestTeamScore.score>=minMaxHomeGoals)
+    }
+
     // let minimumAwayCombinedGoals = 1;
     // if(minimumAwayCombinedGoals){
     //   results = results.filter(e=>e.away_team_data.minMaxGoals.lowestTotalGoals.score>=minimumAwayCombinedGoals)
     // }
 
-    let maxAwayCombinedGoals = 5;
-    if(maxAwayCombinedGoals){
-      results = results.filter(e=>e.away_team_data.minMaxGoals.highestTotalGoals.score<=maxAwayCombinedGoals)
-    }
+    // let maxAwayCombinedGoals = 5;
+    // if(maxAwayCombinedGoals){
+    //   results = results.filter(e=>e.away_team_data.minMaxGoals.highestTotalGoals.score<=maxAwayCombinedGoals)
+    // }
+
+    // let minMaxAwayCombinedGoals = 5;
+    // if(minMaxAwayCombinedGoals){
+    //   results = results.filter(e=>e.away_team_data.minMaxGoals.highestTotalGoals.score>=minMaxAwayCombinedGoals)
+    // }
 
     // let minimumAwayGoals = 1;
     // if(minimumAwayGoals){
     //   results = results.filter(e=>e.away_team_data.minMaxGoals.lowestTeamScore.score>=minimumAwayGoals)
     // }
+
+    let minMaxAwayGoals = 1;
+    if(minMaxAwayGoals){
+      results = results.filter(e=>e.away_team_data.minMaxGoals.highestTeamScore.score>=minMaxAwayGoals)
+    }
     
-    // let minCombinedGoals = 1;
-    // if(minCombinedGoals){
-    //   results = results.filter(e=>e.head_to_head_data.minMaxGoals.lowestTotalGoals.score>=minCombinedGoals)
+    let minCombinedGoals = 1;
+    if(minCombinedGoals){
+      results = results.filter(e=>e.head_to_head_data.minMaxGoals.lowestTotalGoals.score>=minCombinedGoals)
+    }
+    
+    // let maxCombinedGoals = 5;
+    // if(maxCombinedGoals){
+    //   results = results.filter(e=>e.head_to_head_data.minMaxGoals.highestTotalGoals.score<=maxCombinedGoals)
     // }
     
-    let maxCombinedGoals = 5;
-    if(maxCombinedGoals){
-      results = results.filter(e=>e.head_to_head_data.minMaxGoals.highestTotalGoals.score<=maxCombinedGoals)
+    let minMaxCombinedGoals = 4;
+    if(minMaxCombinedGoals){
+      results = results.filter(e=>e.head_to_head_data.minMaxGoals.highestTotalGoals.score>=minMaxCombinedGoals)
+    }
+
+    let maxOdds = 1.65;
+    if(maxOdds){
+      results = results.filter(e=>Object.keys(e.odds).filter(odd=>e.odds[odd]<=maxOdds).length>0)
     }
   
     return results;
@@ -442,7 +472,7 @@ const Games = () => {
   }
   
   return (
-      <div className="w-full h-full overflow-hidden overflow-y-auto flex flex-wrap justify-center p-[2rem] gap-[2rem]">
+      <div className="w-full h-full overflow-hidden overflow-y-auto flex flex-wrap justify-center pb-[5rem] md:pb-[6rem] p-[1rem] md:p-[2rem] gap-[1rem] md:gap-[2rem]">
         {getFilteredGames().map((item, key) => <Game {...item} key={key} />)}
       </div>
   )
@@ -451,8 +481,8 @@ const Games = () => {
 export default function GamesGrid() {
   return (
     <RecoilRoot>
-      <BottomNavigation />
       <Games />
+      <BottomNavigation />
     </RecoilRoot>
   )
 }

@@ -492,6 +492,8 @@ export async function GET() {
 
           lastResults.each((_, element) => {
                 const date = $(element).find('.date-time-wrapper > small > span').text();
+                const home = $(element).find('.teams > .home').text();
+                const away = $(element).find('.teams > .away').text();
                 const homeScore = $(element).find('.score-container > .home').text();
                 const awayScore = $(element).find('.score-container > .away').text();
                 if(!home_team_goals[home]){
@@ -526,6 +528,8 @@ export async function GET() {
 
           lastResults.each((_, element) => {
                 const date = $(element).find('.date-time-wrapper > small > span').text();
+                const home = $(element).find('.teams > .home').text();
+                const away = $(element).find('.teams > .away').text();
                 const homeScore = $(element).find('.score-container > .home').text();
                 const awayScore = $(element).find('.score-container > .away').text();
                 if(!away_team_goals[home]){
