@@ -18,5 +18,5 @@ export const filtersAtom = atom({
 
 export const showMoreDetailsAtom = atom({
   key: 'showMoreDetails',
-  default: false
+  default: true
 })
