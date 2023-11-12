@@ -1,9 +1,11 @@
-import { filtersAtom } from "@/atoms";
+import { filtersAtom, showMoreDetailsAtom } from "@/atoms";
 import { CupertinoPane } from "cupertino-pane";
 import { useEffect, useState, useRef } from "react";
 import RangeSlider from 'react-range-slider-input';
 import 'react-range-slider-input/dist/style.css'; 
 import { useSetRecoilState } from "recoil";
+import { ToggleSlider }  from "react-toggle-slider";
+import { useRecoilState } from "recoil";
 
 const BottomNavigation = () => {
 
@@ -93,10 +95,22 @@ const BottomNavigation = () => {
       </div>
     )
   }
+
+  const ShowMoreDetails = () => {
+    const [ShowMoreDetails, setShowMoreDetails] = useRecoilState(showMoreDetailsAtom);
+    return (
+      <div className="flex justify-between gap-4 items-center w-full">
+        <div>Show More Details</div>
+        <ToggleSlider active={ShowMoreDetails} onToggle={(e:boolean)=>setShowMoreDetails(e)} handleSize={25} barHeight={35} barWidth={65} barBorderRadius={100} th barStylesActive={{backgroundColor: '#00D26A'}} />
+      </div>
+    );
+  };
+  
   
   return (
     <div className={`relative cupertino-pane ${!paneReady ? hiddenStyle : ""}`}>
       <div className="flex w-screen flex-col gap-[3rem] items-center bg-white rounded-[3rem] p-[1rem] max-w-[425px] pb-[10rem]">
+        <ShowMoreDetails />
         <input ref={searchRef} onChange={(e)=>filters.current = {...filters.current, search:e.target.value}} type="text" placeholder="Search" className="p-[1rem] w-full rounded-[1rem] border-[0.1rem] text-black" />
         <SliderGroup heading="Under Goals" data={[
           {

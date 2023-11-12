@@ -15,3 +15,8 @@ export const filtersAtom = atom({
   key: 'fiters',
   default: {}
 })
+
+export const showMoreDetailsAtom = atom({
+  key: 'showMoreDetails',
+  default: false
+})
