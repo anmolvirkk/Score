@@ -23,6 +23,8 @@ const getMonth = (number:number) => {
 
 const Game = (matchData : MatchData) => {
 
+  const [showMoreDetails] = useRecoilState(showMoreDetailsAtom);
+
   if(!matchData || !matchData?.date || !matchData?.time){
     return null;
   }
@@ -201,8 +203,6 @@ const Game = (matchData : MatchData) => {
   if(!matchData.head_to_head_data.minMaxGoals.lowestTotalGoals.teams){
     return null;
   }
-
-  const [showMoreDetails] = useRecoilState(showMoreDetailsAtom);
   
   return (
     <>
