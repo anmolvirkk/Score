@@ -170,7 +170,7 @@ const Game = (matchData : MatchData) => {
             {title: 'Draws', value: formData.draws, color: "rgb(50,50,60)"},
             {title: 'Losses', value: formData.losses, color: "rgb(30,30,40)"}
           ];
-          if(formData.wins+formData.draws+formData.losses <= 2){
+          if(formData.wins+formData.draws+formData.losses <= 3){
             return null;
           }
           return (
