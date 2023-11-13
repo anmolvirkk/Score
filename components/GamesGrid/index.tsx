@@ -8,6 +8,10 @@ import {RecoilRoot, useRecoilState} from 'recoil';
 import { filtersAtom, showMoreDetailsAtom } from '@/atoms';
 import Loading from '../Loading';
 import testJSON from './test.json';
+import {Swiper, SwiperSlide} from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/effect-coverflow';
+import { EffectCoverflow } from 'swiper/modules';
 
 const getMonth = (number:number) => {
   const months = [
@@ -72,7 +76,7 @@ const Game = (matchData : MatchData) => {
     )
   }
 
-  const LastScore = ({table_data}: {
+  const LastScore = ({table_data, defaultShowAmount=4}: {
     table_data: {
       date: string;
       home: {
@@ -83,7 +87,8 @@ const Game = (matchData : MatchData) => {
         team: string;
         score: number;
       };
-    }[]
+    }[], 
+    defaultShowAmount?: number
   }) => {
 
     const Score = ({date, home, away} : {
@@ -106,18 +111,18 @@ const Game = (matchData : MatchData) => {
       return (
         <div className="relative pt-1">
           <div className="flex mb-2 items-center justify-between gap-[0.5rem]">
-              <div className="flex gap-[1rem] bg-primary-700 py-[0.5rem] px-[1rem] rounded-[0.5rem]">
+              <div className="flex items-center gap-[1rem] bg-primary-700 py-[0.5rem] px-[1rem] rounded-[0.5rem]">
                 <div>{home.team}</div>
                 <div
-                  className={`last-match-goals text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white ${isHomeTeamGreater ? 'bg-green-400' : 'bg-primary-700'}`}
+                  className={`last-match-goals h-[2rem] min-w-[2rem] flex items-center justify-center text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white ${isHomeTeamGreater ? 'bg-green-400' : 'bg-primary-700'}`}
                 >
                   {homeGoals}
                 </div>
               </div>
-              <div className="flex gap-[1rem] bg-primary-700 py-[0.5rem] px-[1rem] rounded-[0.5rem]">
+              <div className="flex items-center gap-[1rem] bg-primary-700 py-[0.5rem] px-[1rem] rounded-[0.5rem]">
                 <div>{away.team}</div>
                 <div
-                  className={`last-match-goals text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white ${!isHomeTeamGreater ? 'bg-green-400' : 'bg-primary-700'}`}
+                  className={`last-match-goals h-[2rem] min-w-[2rem] flex items-center justify-center text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white ${!isHomeTeamGreater ? 'bg-green-400' : 'bg-primary-700'}`}
                 >
                   {awayGoals}
                 </div>
@@ -131,7 +136,7 @@ const Game = (matchData : MatchData) => {
   
     return (
       <div className="flex flex-col gap-[1rem]">
-        {table_data.slice(0, showMore ? table_data.length : 3).map((item, key) => <Score key={key} {...item} />)}
+        {table_data.slice(0, showMore ? table_data.length : defaultShowAmount).map((item, key) => <Score key={key} {...item} />)}
         <div onClick={()=>setShowMore(!showMore)} className='opacity-[0.5] cursor-pointer'>Show {showMore ? 'less' : 'more'}</div>
       </div>
     );
@@ -239,22 +244,43 @@ const Game = (matchData : MatchData) => {
   
   return (
     <>
-      <div className='game p-[1.5rem] w-full md:w-fit rounded-[1rem] bg-primary-600 border-x-2 shadow-md text-white border-gray-900 gap-[5rem] md:max-w-[90vw]'>
-        <div className='flex flex-col gap-[1rem]'>
+      <div className='game py-[1.5rem] w-full md:w-fit rounded-[1rem] bg-primary-600 border-x-2 shadow-md text-white border-gray-900 gap-[5rem] md:max-w-[25rem]'>
+        <div className='flex flex-col gap-[1rem] px-[1.5rem]'>
             {showMoreDetails && <GameTime />}
             <GameOdds />
         </div>
         {showMoreDetails && <>
-          <div className="flex justify-between gap-[1rem]">
-            <TeamForm form={matchData.home_team_data.form} />
-            <TeamForm form={matchData.away_team_data.form} />
-          </div>
-          <GoalStats />
-          <div className='flex flex-col gap-[2rem] mt-[2rem] mb-[1rem]'>
-            <LastScore table_data={matchData.head_to_head_table_data} />
-            <LastScore table_data={matchData.home_team_table_data} />
-            <LastScore table_data={matchData.away_team_table_data} />
-          </div>
+          <Swiper
+            spaceBetween={50}
+            slidesPerView={1}
+            modules={[EffectCoverflow]}
+            loop={true}
+            effect='coverflow'
+          >
+            <SwiperSlide className='px-[1.5rem]'>
+              <GoalStats />
+            </SwiperSlide>
+            <SwiperSlide className='px-[1.5rem]'>
+              <div className="flex justify-between gap-[1rem] mb-[1rem]">
+                <TeamForm form={matchData.home_team_data.form} />
+                <TeamForm form={matchData.away_team_data.form} />
+              </div>
+              <Heading text="Head to Head" className='mb-[1rem]' />
+              <LastScore table_data={matchData.head_to_head_table_data} />
+            </SwiperSlide>
+            <SwiperSlide className='px-[1.5rem]'>
+              <div className="mt-[2rem]">
+                <Heading text="Home" className='mb-[1rem]' />
+                <LastScore table_data={matchData.home_team_table_data} defaultShowAmount={5} />
+              </div>
+            </SwiperSlide>
+            <SwiperSlide className='px-[1.5rem]'>
+              <div className="mt-[2rem]">
+                <Heading text="Away" className='mb-[1rem]' />
+                <LastScore table_data={matchData.away_team_table_data} defaultShowAmount={5} />
+              </div>
+            </SwiperSlide>
+          </Swiper>
         </>}
       </div>
     </>
