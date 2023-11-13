@@ -189,6 +189,53 @@ const Game = (matchData : MatchData) => {
   if(!matchData.head_to_head_data.minMaxGoals.lowestTotalGoals.teams){
     return null;
   }
+
+  const GoalStats = () => {
+    const Stats = ({team, maxGoals, minGoals, avgGoals} : {team:string, maxGoals:number, minGoals:number, avgGoals:number|string}) => {
+      const Stat = ({label, goals} : {label:string, goals:string|number}) => {
+        return (
+          <div className="w-full bg-primary-700 rounded-[0.5rem] p-[1rem] flex flex-col gap-[0.5rem] justify-between">
+            <div className='text-[0.8rem]'>{label}</div>
+            <div className='font-[700] text-[2.5rem]'>{goals}</div>
+          </div>
+        )
+      }
+      return (
+        <div className='flex flex-col gap-[1rem]'>
+          <div className='flex flex-col mt-[1.5rem] gap-[1rem]'>
+            <div>{team}</div>
+            <div className='flex gap-[1rem]'>
+              <Stat label='Average Goals' goals={avgGoals} />
+              <Stat label='Max Goals' goals={maxGoals} />
+              <Stat label='Min Goals' goals={minGoals} />
+            </div>
+          </div>
+        </div>
+      )
+    }
+    return (
+      <div className='flex flex-col gap-[1rem]'>
+        <Stats 
+          team={matchData.home_team_data.minMaxGoals.highestTeamScore.team} 
+          maxGoals={matchData.home_team_data.minMaxGoals.highestTeamScore.score} 
+          minGoals={matchData.home_team_data.minMaxGoals.lowestTeamScore.score} 
+          avgGoals={matchData.home_team_data.average_scored.goals} 
+        />
+        <Stats 
+          team="Combined"
+          maxGoals={matchData.head_to_head_data.minMaxGoals.highestTotalGoals.score} 
+          minGoals={matchData.head_to_head_data.minMaxGoals.lowestTotalGoals.score} 
+          avgGoals={matchData.head_to_head_data.average_scored.reduce((a, b) => a + b.goals, 0).toFixed(1)} 
+        />
+        <Stats 
+          team={matchData.away_team_data.minMaxGoals.highestTeamScore.team}
+          maxGoals={matchData.away_team_data.minMaxGoals.highestTotalGoals.score} 
+          minGoals={matchData.away_team_data.minMaxGoals.lowestTotalGoals.score} 
+          avgGoals={matchData.away_team_data.average_scored.goals} 
+        />
+      </div>
+    )
+  }
   
   return (
     <>
@@ -202,71 +249,7 @@ const Game = (matchData : MatchData) => {
             <TeamForm form={matchData.home_team_data.form} />
             <TeamForm form={matchData.away_team_data.form} />
           </div>
-          <div className='flex flex-col gap-[1rem]'>
-            <div>
-                <div className='flex flex-col gap-[1rem]'>
-                  <div className='flex flex-col mt-[1.5rem] gap-[1rem]'>
-                    <div>{matchData.home_team_data.minMaxGoals.highestTeamScore.team}</div>
-                    <div className='flex gap-[1rem]'>
-                      <div>
-                        <div>Average Goals</div>
-                        <div className='font-[700] text-[1.5rem]'>{matchData.home_team_data.average_scored.goals}</div>
-                      </div>
-                      <div>
-                        <div>Max Goals</div>
-                        <div className='font-[700] text-[1.5rem]'>{matchData.home_team_data.minMaxGoals.highestTeamScore.score}</div>
-                      </div>
-                      <div>
-                        <div>Min Goals</div>
-                        <div className='font-[700] text-[1.5rem]'>{matchData.home_team_data.minMaxGoals.lowestTeamScore.score}</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-            </div>
-            <div>
-              <div className='flex flex-col gap-[1rem]'>
-                <div className='flex flex-col mt-[1.5rem] gap-[1rem]'>
-                  <div>Combined</div>
-                  <div className='flex gap-[1rem]'>
-                    <div>
-                      <div>Average Goals</div>
-                      <div className='font-[700] text-[1.5rem]'>{matchData.head_to_head_data.average_scored.reduce((a, b) => a + b.goals, 0).toFixed(1)}</div>
-                    </div>
-                    <div>
-                      <div>Max Goals</div>
-                      <div className='font-[700] text-[1.5rem]'>{matchData.head_to_head_data.minMaxGoals.highestTotalGoals.score}</div>
-                    </div>
-                    <div>
-                      <div>Min Goals</div>
-                      <div className='font-[700] text-[1.5rem]'>{matchData.head_to_head_data.minMaxGoals.lowestTotalGoals.score}</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div>
-                <div className='flex flex-col gap-[1rem]'>
-                  <div className='flex flex-col mt-[1.5rem] gap-[1rem]'>
-                    <div>{matchData.away_team_data.minMaxGoals.highestTeamScore.team}</div>
-                    <div className='flex gap-[1rem]'>
-                      <div>
-                        <div>Average Goals</div>
-                        <div className='font-[700] text-[1.5rem]'>{matchData.away_team_data.average_scored.goals}</div>
-                      </div>
-                      <div>
-                        <div>Max Goals</div>
-                        <div className='font-[700] text-[1.5rem]'>{matchData.away_team_data.minMaxGoals.highestTeamScore.score}</div>
-                      </div>
-                      <div>
-                        <div>Min Goals</div>
-                        <div className='font-[700] text-[1.5rem]'>{matchData.away_team_data.minMaxGoals.lowestTeamScore.score}</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-            </div>
-          </div>
+          <GoalStats />
           <div className='flex flex-col gap-[2rem] mt-[2rem] mb-[1rem]'>
             <LastScore table_data={matchData.head_to_head_table_data} />
             <LastScore table_data={matchData.home_team_table_data} />
