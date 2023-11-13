@@ -123,20 +123,6 @@ const Game = (matchData : MatchData) => {
                 </div>
               </div>
           </div>
-          <div className="flex h-2 overflow-hidden rounded">
-              <div
-                className={`flex flex-col text-center whitespace-nowrap text-white justify-center ${isHomeTeamGreater ? 'bg-green-400' : 'bg-primary-700'}`}
-                style={{
-                  width: `${(homeGoals / totalGoals) * 100}%`,
-                }}
-              />
-              <div
-                className={`flex flex-col text-center whitespace-nowrap text-white justify-center ${!isHomeTeamGreater ? 'bg-green-400' : 'bg-primary-700'}`}
-                style={{
-                  width: `${(awayGoals / totalGoals) * 100}%`,
-                }}
-              />
-          </div>
         </div>
       )
     }
@@ -172,7 +158,7 @@ const Game = (matchData : MatchData) => {
             {title: 'Draws', value: formData.draws, color: "rgb(50,50,60)"},
             {title: 'Losses', value: formData.losses, color: "rgb(30,30,40)"}
           ];
-          if(formData.wins+formData.draws+formData.losses <= 3){
+          if(formData.wins+formData.draws+formData.losses <= 4){
             return null;
           }
           return (
@@ -207,11 +193,9 @@ const Game = (matchData : MatchData) => {
   return (
     <>
       <div className='game p-[1.5rem] w-full md:w-fit rounded-[1rem] bg-primary-600 border-x-2 shadow-md text-white border-gray-900 gap-[5rem] md:max-w-[90vw]'>
-        <div className='flex gap-[1rem]'>
-          <div className="w-[20rem]">
+        <div className='flex flex-col gap-[1rem]'>
             {showMoreDetails && <GameTime />}
             <GameOdds />
-          </div>
         </div>
         {showMoreDetails && <>
           <div className="flex justify-between gap-[1rem]">
@@ -226,7 +210,7 @@ const Game = (matchData : MatchData) => {
                     <div className='flex gap-[1rem]'>
                       <div>
                         <div>Average Goals</div>
-                        <div className='font-[700] text-[1.5rem]'>{matchData.home_team_data.average_scored[1].goals}</div>
+                        <div className='font-[700] text-[1.5rem]'>{matchData.home_team_data.average_scored.goals}</div>
                       </div>
                       <div>
                         <div>Max Goals</div>
@@ -268,7 +252,7 @@ const Game = (matchData : MatchData) => {
                     <div className='flex gap-[1rem]'>
                       <div>
                         <div>Average Goals</div>
-                        <div className='font-[700] text-[1.5rem]'>{matchData.away_team_data.average_scored[1].goals}</div>
+                        <div className='font-[700] text-[1.5rem]'>{matchData.away_team_data.average_scored.goals}</div>
                       </div>
                       <div>
                         <div>Max Goals</div>
@@ -282,6 +266,11 @@ const Game = (matchData : MatchData) => {
                   </div>
                 </div>
             </div>
+          </div>
+          <div className='flex flex-col gap-[2rem] mt-[2rem] mb-[1rem]'>
+            <LastScore table_data={matchData.head_to_head_table_data} />
+            <LastScore table_data={matchData.home_team_table_data} />
+            <LastScore table_data={matchData.away_team_table_data} />
           </div>
         </>}
       </div>
@@ -349,11 +338,6 @@ const Games = () => {
     //   results = results.filter(e=>e.home_team_data.minMaxGoals.lowestTeamScore.score>=minimumHomeGoals)
     // }
 
-    let minMaxHomeGoals = 1;
-    if(minMaxHomeGoals){
-      results = results.filter(e=>e.home_team_data.minMaxGoals.highestTeamScore.score>=minMaxHomeGoals)
-    }
-
     // let minimumAwayCombinedGoals = 1;
     // if(minimumAwayCombinedGoals){
     //   results = results.filter(e=>e.away_team_data.minMaxGoals.lowestTotalGoals.score>=minimumAwayCombinedGoals)
@@ -369,15 +353,35 @@ const Games = () => {
     //   results = results.filter(e=>e.away_team_data.minMaxGoals.highestTotalGoals.score>=minMaxAwayCombinedGoals)
     // }
 
+    // let minimumHomeGoals = 1;
+    // if(minimumHomeGoals){
+    //   results = results.filter(e=>e.home_team_data.minMaxGoals.lowestTeamScore.score>=minimumHomeGoals)
+    // }
+
     // let minimumAwayGoals = 1;
     // if(minimumAwayGoals){
     //   results = results.filter(e=>e.away_team_data.minMaxGoals.lowestTeamScore.score>=minimumAwayGoals)
     // }
 
-    let minMaxAwayGoals = 1;
+    // let maxHomeGoals = 2;
+    // if(maxHomeGoals){
+    //   results = results.filter(e=>e.home_team_data.minMaxGoals.highestTeamScore.score<=maxHomeGoals)
+    // }
+
+    // let maxAwayGoals = 2;
+    // if(maxAwayGoals){
+    //   results = results.filter(e=>e.away_team_data.minMaxGoals.highestTeamScore.score<=maxAwayGoals)
+    // }
+
+    let minMaxAwayGoals = 5;
     if(minMaxAwayGoals){
       results = results.filter(e=>e.away_team_data.minMaxGoals.highestTeamScore.score>=minMaxAwayGoals)
     }
+
+    // let minMaxHomeGoals = 5;
+    // if(minMaxHomeGoals){
+    //   results = results.filter(e=>e.home_team_data.minMaxGoals.highestTeamScore.score>=minMaxHomeGoals)
+    // }
     
     let minCombinedGoals = 1;
     if(minCombinedGoals){
@@ -389,15 +393,20 @@ const Games = () => {
     //   results = results.filter(e=>e.head_to_head_data.minMaxGoals.highestTotalGoals.score<=maxCombinedGoals)
     // }
     
-    let minMaxCombinedGoals = 4;
-    if(minMaxCombinedGoals){
-      results = results.filter(e=>e.head_to_head_data.minMaxGoals.highestTotalGoals.score>=minMaxCombinedGoals)
-    }
+    // let minMaxCombinedGoals = 4;
+    // if(minMaxCombinedGoals){
+    //   results = results.filter(e=>e.head_to_head_data.minMaxGoals.highestTotalGoals.score>=minMaxCombinedGoals)
+    // }
 
-    let maxOdds = 1.65;
-    if(maxOdds){
-      results = results.filter(e=>Object.keys(e.odds).filter(odd=>e.odds[odd]<=maxOdds).length>0)
-    }
+    // let maxOdds = 1.65;
+    // if(maxOdds){
+    //   results = results.filter(e=>Object.keys(e.odds).filter(odd=>e.odds[odd]<=maxOdds).length>0)
+    // }
+
+    // let minOdds = 1.7;
+    // if(minOdds){
+    //   results = results.filter(e=>Object.keys(e.odds).filter(odd=>e.odds[odd]>=minOdds).length>2)
+    // }
   
     return results;
 

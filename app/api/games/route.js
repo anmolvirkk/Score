@@ -1,6 +1,37 @@
 import axios from 'axios'
 import cheerio from 'cheerio';
 
+function findMostCommonTeam(data) {
+  const teamCount = {};
+
+  // Loop through the data and count occurrences of each team
+  data.forEach(match => {
+      if (teamCount[match.home.team]) {
+          teamCount[match.home.team]++;
+      } else {
+          teamCount[match.home.team] = 1;
+      }
+
+      if (teamCount[match.away.team]) {
+          teamCount[match.away.team]++;
+      } else {
+          teamCount[match.away.team] = 1;
+      }
+  });
+
+  // Find the team with the maximum count
+  let mostCommonTeam = null;
+  let maxCount = 0;
+  Object.keys(teamCount).forEach(team => {
+      if (teamCount[team] > maxCount) {
+          mostCommonTeam = team;
+          maxCount = teamCount[team];
+      }
+  });
+
+  return mostCommonTeam;
+}
+
 function findHighestAndLowestCombinedGoals(matches, team1, team2) {
 
   let highestTotalGoals = null;
@@ -80,66 +111,74 @@ function findHighestAndLowestCombinedGoals(matches, team1, team2) {
       };
     }
 
-    let team1Score = match.home.team === team1 ? match.home.score : match.away.score;
+    let team1Score = match.home.team === team1 ? match.home.score : match.away.team === team1 ? match.away.score : null;
 
-    if(!highestTeam1Score){
-      highestTeam1Score = {
-        score: team1Score,
-        team: team1
-      };
-    }
+    if(team1Score !== null){
 
-    if(!lowestTeam1Score){
-      lowestTeam1Score = {
-        score: team1Score,
-        team: team1
-      };
-    }
-    
-    if (team1Score > highestTeam1Score.score) {
-      highestTeam1Score = {
-        score: team1Score,
-        team: team1
-      };
-    }
+      if(highestTeam1Score === null){
+        highestTeam1Score = {
+          score: team1Score,
+          team: team1
+        };
+      }
+  
+      if(lowestTeam1Score === null){
+        lowestTeam1Score = {
+          score: team1Score,
+          team: team1
+        };
+      }
+      
+      if (team1Score > highestTeam1Score.score) {
+        highestTeam1Score = {
+          score: team1Score,
+          team: team1
+        };
+      }
+  
+      if (team1Score < lowestTeam1Score.score) {
+        lowestTeam1Score = {
+          score: team1Score,
+          team: team1
+        };
+      }
 
-    if (team1Score < lowestTeam1Score.score) {
-      lowestTeam1Score = {
-        score: team1Score,
-        team: team1
-      };
     }
 
     if(team2){
 
-      const team2Score = match.home.team === team2 ? match.home.score : match.away.score;
+      const team2Score = match.home.team === team2 ? match.home.score : match.away.team === team2 ? match.away.score : null;
 
-      if(!highestTeam2Score){
-        highestTeam2Score = {
-          team: team2,
-          score: team2Score
-        };
-      }
-  
-      if(!lowestTeam2Score){
-        lowestTeam2Score = {
-          team: team2,
-          score: team2Score
-        };
-      }
+      if(team2Score !== null){
 
-      if (team2Score > highestTeam2Score.score) {
-        highestTeam2Score = {
-          team: team2,
-          score: team2Score
-        };
-      }
+        if(highestTeam2Score === null){
+          highestTeam2Score = {
+            team: team2,
+            score: team2Score
+          };
+        }
+    
+        if(lowestTeam2Score === null){
+          lowestTeam2Score = {
+            team: team2,
+            score: team2Score
+          };
+        }
   
-      if (team2Score < lowestTeam2Score.score) {
-        lowestTeam2Score = {
-          team: team2,
-          score: team2Score
-        };
+        if (team2Score > highestTeam2Score.score) {
+          highestTeam2Score = {
+            team: team2,
+            score: team2Score
+          };
+        }
+    
+        if (team2Score < lowestTeam2Score.score) {
+          lowestTeam2Score = {
+            team: team2,
+            score: team2Score
+          };
+        }
+
       }
 
     }
@@ -323,19 +362,10 @@ export async function GET() {
       [Object.keys(table_goals)[1]]: calculateForm(Object.keys(table_goals)[1], table_data)
     }
 
-    const homeTeamAverage = calculateAverageGoals(Object.keys(table_goals)[0], table_data);
-    const awayTeamAverage = calculateAverageGoals(Object.keys(table_goals)[1], table_data);
-
-    const average_scored = [
-      {
-        team: Object.keys(table_goals)[0],
-        goals: homeTeamAverage
-      },
-      {
-        team: Object.keys(table_goals)[1],
-        goals: awayTeamAverage
-      }
-    ]
+    const average_scored = {
+      team,
+      goals: calculateAverageGoals(team, table_data)
+    };
     
     const minMaxGoals = findHighestAndLowestCombinedGoals(table_data, team);
 
@@ -517,9 +547,12 @@ export async function GET() {
                 }];
           })
 
-          home_team_data = getGamesData(home_team_goals, home_team_table_data, home);
+          const mostCommonTeam = findMostCommonTeam(home_team_table_data);
+
+          home_team_data = getGamesData(home_team_goals, home_team_table_data, mostCommonTeam);
 
         }
+
         if(index === 2){
           
           const lastResults = $(element).find('.lastresults');
@@ -554,7 +587,9 @@ export async function GET() {
 
           })
 
-          away_team_data = getGamesData(away_team_goals, away_team_table_data, away)
+          const mostCommonTeam = findMostCommonTeam(away_team_table_data);
+
+          away_team_data = getGamesData(away_team_goals, away_team_table_data, mostCommonTeam)
 
         }
       })

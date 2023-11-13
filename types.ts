@@ -91,7 +91,7 @@ export type MatchData = {
     average_scored: {
       team: string;
       goals: number;
-    }[];
+    };
     minMaxGoals: {
       highestTotalGoals: {
         score: number;
@@ -143,7 +143,7 @@ export type MatchData = {
     average_scored: {
       team: string;
       goals: number;
-    }[];
+    };
     minMaxGoals: {
       highestTotalGoals: {
         score: number;
