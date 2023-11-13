@@ -76,7 +76,7 @@ const Game = (matchData : MatchData) => {
     )
   }
 
-  const LastScore = ({table_data, defaultShowAmount=4}: {
+  const LastScore = ({table_data, defaultShowAmount=2}: {
     table_data: {
       date: string;
       home: {
@@ -201,13 +201,13 @@ const Game = (matchData : MatchData) => {
         return (
           <div className="w-full bg-primary-700 rounded-[0.5rem] p-[1rem] flex flex-col gap-[0.5rem] justify-between">
             <div className='text-[0.8rem]'>{label}</div>
-            <div className='font-[700] text-[2.5rem]'>{goals}</div>
+            <div className='font-[700] text-[1.5rem]'>{goals}</div>
           </div>
         )
       }
       return (
         <div className='flex flex-col gap-[1rem]'>
-          <div className='flex flex-col mt-[1.5rem] gap-[1rem]'>
+          <div className='flex flex-col mt-[1.5rem] gap-[0.5rem]'>
             <div>{team}</div>
             <div className='flex gap-[1rem]'>
               <Stat label='Average Goals' goals={avgGoals} />
@@ -219,7 +219,7 @@ const Game = (matchData : MatchData) => {
       )
     }
     return (
-      <div className='flex flex-col gap-[1rem]'>
+      <div className='flex flex-col'>
         <Stats 
           team={matchData.home_team_data.minMaxGoals.highestTeamScore.team} 
           maxGoals={matchData.home_team_data.minMaxGoals.highestTeamScore.score} 
@@ -271,13 +271,13 @@ const Game = (matchData : MatchData) => {
             <SwiperSlide className='px-[1.5rem]'>
               <div className="mt-[2rem]">
                 <Heading text="Home" className='mb-[1rem]' />
-                <LastScore table_data={matchData.home_team_table_data} defaultShowAmount={5} />
+                <LastScore table_data={matchData.home_team_table_data} defaultShowAmount={4} />
               </div>
             </SwiperSlide>
             <SwiperSlide className='px-[1.5rem]'>
               <div className="mt-[2rem]">
                 <Heading text="Away" className='mb-[1rem]' />
-                <LastScore table_data={matchData.away_team_table_data} defaultShowAmount={5} />
+                <LastScore table_data={matchData.away_team_table_data} defaultShowAmount={4} />
               </div>
             </SwiperSlide>
           </Swiper>
