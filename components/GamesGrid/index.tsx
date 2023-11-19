@@ -12,6 +12,16 @@ import {Swiper, SwiperSlide} from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import { EffectCoverflow } from 'swiper/modules';
+import Header from '../Header';
+import HeroBanner from '../HeroBanner';
+import CategorySelect from '../CategorySelect';
+import TopPicks from '../TopPicks';
+import Collection from '../Collection';
+
+import under from '../CategorySelect/images/under.png';
+import under2 from '../CategorySelect/images/under.jpg';
+import over from '../CategorySelect/images/over.jpg';
+import over2 from '../CategorySelect/images/over.webp';
 
 const getMonth = (number:number) => {
   const months = [
@@ -234,8 +244,8 @@ const Game = (matchData : MatchData) => {
         />
         <Stats 
           team={matchData.away_team_data.minMaxGoals.highestTeamScore.team}
-          maxGoals={matchData.away_team_data.minMaxGoals.highestTotalGoals.score} 
-          minGoals={matchData.away_team_data.minMaxGoals.lowestTotalGoals.score} 
+          maxGoals={matchData.away_team_data.minMaxGoals.highestTeamScore.score} 
+          minGoals={matchData.away_team_data.minMaxGoals.lowestTeamScore.score} 
           avgGoals={matchData.away_team_data.average_scored.goals} 
         />
       </div>
@@ -372,30 +382,40 @@ const Games = () => {
     //   results = results.filter(e=>e.away_team_data.minMaxGoals.lowestTeamScore.score>=minimumAwayGoals)
     // }
 
-    // let maxHomeGoals = 2;
-    // if(maxHomeGoals){
-    //   results = results.filter(e=>e.home_team_data.minMaxGoals.highestTeamScore.score<=maxHomeGoals)
-    // }
+    let maxHomeGoals = 2;
+    if(maxHomeGoals){
+      results = results.filter(e=>e.home_team_data.minMaxGoals.highestTeamScore.score<=maxHomeGoals)
+    }
+
+    let maxHomeAverageGoals = 0.9;
+    if(maxHomeAverageGoals){
+      results = results.filter(e=>e.home_team_data.average_scored.goals<=maxHomeAverageGoals)
+    }
 
     // let maxAwayGoals = 2;
     // if(maxAwayGoals){
     //   results = results.filter(e=>e.away_team_data.minMaxGoals.highestTeamScore.score<=maxAwayGoals)
     // }
 
-    let minMaxAwayGoals = 5;
-    if(minMaxAwayGoals){
-      results = results.filter(e=>e.away_team_data.minMaxGoals.highestTeamScore.score>=minMaxAwayGoals)
-    }
+    // let maxAwayAverageGoals = 0.9;
+    // if(maxAwayAverageGoals){
+    //   results = results.filter(e=>e.away_team_data.average_scored.goals<=maxAwayAverageGoals)
+    // }
+
+    // let minMaxAwayGoals = 5;
+    // if(minMaxAwayGoals){
+    //   results = results.filter(e=>e.away_team_data.minMaxGoals.highestTeamScore.score>=minMaxAwayGoals)
+    // }
 
     // let minMaxHomeGoals = 5;
     // if(minMaxHomeGoals){
     //   results = results.filter(e=>e.home_team_data.minMaxGoals.highestTeamScore.score>=minMaxHomeGoals)
     // }
     
-    let minCombinedGoals = 1;
-    if(minCombinedGoals){
-      results = results.filter(e=>e.head_to_head_data.minMaxGoals.lowestTotalGoals.score>=minCombinedGoals)
-    }
+    // let minCombinedGoals = 1;
+    // if(minCombinedGoals){
+    //   results = results.filter(e=>e.head_to_head_data.minMaxGoals.lowestTotalGoals.score>=minCombinedGoals)
+    // }
     
     // let maxCombinedGoals = 5;
     // if(maxCombinedGoals){
@@ -431,6 +451,90 @@ const Games = () => {
 export default function GamesGrid() {
   return (
     <RecoilRoot>
+      <Header />
+      <HeroBanner />
+      <TopPicks heading="Today's top picks" />
+      <CategorySelect heading="Bet Types" categories={[
+        {
+          text: 'Team Under',
+          link: '',
+          img: under
+        },
+        {
+          text: 'Team Over',
+          link: '',
+          img: over
+        },
+        {
+          text: 'Total Under',
+          link: '',
+          img: under2,
+          imgClass: 'object-left'
+        },
+        {
+          text: 'Total Over',
+          link: '',
+          img: over2
+        }
+      ]} />
+      <TopPicks heading='Team Goals Under' />
+      <CategorySelect heading="Team Goals Under" categories={[
+        {
+          text: 'Under 2.5',
+          link: '',
+          img: under
+        },
+        {
+          text: 'Under 3.5',
+          link: '',
+          img: over
+        },
+        {
+          text: 'Under 4.5',
+          link: '',
+          img: under2
+        },
+        {
+          text: 'Under 5.5',
+          link: '',
+          img: over2
+        },
+        {
+          text: 'Under 6.5',
+          link: '',
+          img: over2
+        },
+        {
+          text: 'Under 7.5',
+          link: '',
+          img: over2
+        }
+      ]} />
+      <TopPicks heading='Team Goals Over' />
+      <CategorySelect heading="Team Goals Over" categories={[
+        {
+          text: 'Over 0.5',
+          link: '',
+          img: under
+        },
+        {
+          text: 'Over 1.5',
+          link: '',
+          img: over
+        },
+        {
+          text: 'Over 2.5',
+          link: '',
+          img: under2
+        },
+        {
+          text: 'Over 3.5',
+          link: '',
+          img: over2
+        }
+      ]} />
+      <TopPicks heading='Team Goals Under' />
+      <Collection />
       <Games />
       <BottomNavigation />
     </RecoilRoot>

@@ -1,0 +1,73 @@
+.heroImg
+  position: relative
+  z-index: 3
+  img
+    object-fit: cover
+    filter: saturate(120%) contrast(120%)
+  .trailer-vignette
+      background: linear-gradient(45deg,rgba(0,0,0,1) 48px,transparent 30%)
+      position: absolute
+      bottom: 0
+      left: 0
+      opacity: 1
+      right: 0
+      top: 0
+      z-index: 3
+      pointer-events: none
+      width: 100%
+  .trailer-vignette:nth-of-type(2)
+      right: 0
+      left: 0
+      background: linear-gradient(-45deg,rgba(0,0,0,1) 48px,transparent 30%)
+  .hero-vignette
+      position: absolute
+      background-color: transparent
+      background: linear-gradient(0deg,rgba(0,0,0,1) 48px,transparent 50%)
+      background-position: 0 top
+      background-repeat: repeat-x
+      background-size: 100% 100%
+      bottom: 0
+      height: 40vh
+      top: auto
+      width: 100%
+      z-index: 3
+      pointer-events: none
+
+.categoryImg
+  width: 100%
+  height: 6rem
+  position: relative
+  z-index: 3
+  border-radius: 100%
+  img
+    object-fit: cover
+    filter: saturate(120%) contrast(120%)
+    border-radius: 100%
+  .trailer-vignette
+      background: linear-gradient(45deg,rgba(0,0,0,1) 4px,transparent 20%)
+      position: absolute
+      bottom: 0
+      left: 0
+      opacity: 1
+      right: 0
+      top: 0
+      z-index: 3
+      pointer-events: none
+      width: 100%
+  .trailer-vignette:nth-of-type(2)
+      right: 0
+      left: 0
+      background: linear-gradient(-45deg,rgba(0,0,0,1) 4px,transparent 20%)
+  .hero-vignette
+      position: absolute
+      background-color: transparent
+      background: linear-gradient(0deg,rgba(0,0,0,1) 0,transparent 20%)
+      background-position: 0 top
+      background-repeat: repeat-x
+      background-size: 100% 100%
+      bottom: 0
+      height: 100%
+      top: auto
+      width: 100%
+      z-index: 3
+      pointer-events: none
